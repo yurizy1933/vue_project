@@ -45,9 +45,9 @@
                 <i class="fa fa-magic"></i>
                 <span>功能测试</span>
               </template>
-              <el-menu-item index="/projectManagement">
+              <el-menu-item index="/projectPrdManagement">
                 <i class="fa fa-file-text-o"></i>
-                <span>需求管理</span>
+                <span>需求文档</span>
               </el-menu-item>
               <el-menu-item index="/testCaseManagement">
                 <i class="fa fa-file-text-o"></i>
@@ -73,9 +73,9 @@
                 <i class="fa fa-cog"></i>
                 <span>系统管理</span>
               </template>
-              <el-menu-item index="/system-settings">
+              <el-menu-item index="/projectManagement">
                 <i class="fa fa-sliders"></i>
-                <span>系统设置</span>
+                <span>项目管理</span>
               </el-menu-item>
               <el-menu-item index="/user-management">
                 <i class="fa fa-users"></i>
@@ -143,9 +143,9 @@ export default {
         'TextGeneration': '文本生成',
         'ImageGeneration': '图像生成',
         'CodeGeneration': '代码生成',
-        'SystemSettings': '系统设置',
-        'UserManagement': '用户管理',
         'projectManagement': '项目管理',
+        'UserManagement': '用户管理',
+        'projectPrdManagement': '需求文档管理',
         'testCaseManagement': '测试用例'
       }
       this.pageTitle = titles[routeName] || '未知页面'

@@ -8,9 +8,10 @@ import HomePage from '../components/login/homePage.vue'
 import Axios from 'axios'
 // import { error } from 'shelljs'
 import router from '.'
-import DocManagement from '../components/aitest/docManagement.vue'
-import projectManagement from '../components/aitest/projectManagement.vue'
+// import DocManagement from '../components/aitest/docManagement.vue'
+import projectPrdManagement from '../components/aitest/projectPrdManagement.vue'
 import testCaseManagement from '../components/aitest/testCaseManagement.vue'
+import projectManagement from '../components/system/projectManagement.vue'
 
 Vue.use(Router)
 
@@ -45,20 +46,25 @@ export default new Router({
           name: 'Dashboard',
           component: HelloWorld // 或者你的仪表盘页面
         },
+        // {
+        //   path: 'docManagement',
+        //   name: 'docManagement',
+        //   component: DocManagement
+        // },
         {
-          path: 'docManagement',
-          name: 'docManagement',
-          component: DocManagement
-        },
-        {
-          path: 'projectManagement',
-          name: 'projectManagement',
-          component: projectManagement
+          path: 'projectPrdManagement',
+          name: 'projectPrdManagement',
+          component: projectPrdManagement
         },
         {
           path: 'testCaseManagement',
           name: 'testCaseManagement',
           component: testCaseManagement
+        },
+        {
+          path: 'projectManagement',
+          name: 'projectManagement',
+          component: projectManagement
         }
       ]
     }
