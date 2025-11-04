@@ -13,15 +13,15 @@
     <!-- 项目列表 -->
     <!-- <el-card> -->
       <div class="card-body">
-        <el-table :data="projects" border stripe size="small" v-loading="listLoading">
-          <el-table-column prop="id" label="项目编号" width="120"></el-table-column>
-          <el-table-column prop="project_name" label="项目名称" min-width="200"></el-table-column>
-          <el-table-column prop="description" label="项目描述" min-width="300" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="owner" label="项目负责人" width="150"></el-table-column>
-          <el-table-column label="操作" width="180" fixed="right">
+        <el-table :data="projects" border stripe size="small" v-loading="listLoading" style="width: 100%">
+          <el-table-column prop="id" label="项目编号" width="100"></el-table-column>
+          <el-table-column prop="project_name" label="项目名称" min-width="180"></el-table-column>
+          <el-table-column prop="description" label="项目描述" min-width="250" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="owner" label="项目负责人" width="120"></el-table-column>
+          <el-table-column label="操作" width="150" fixed="right">
             <template #default="scope">
               <el-button type="text" @click="openEdit(scope.row)"><i class="fa fa-edit mr-1"></i>编辑</el-button>
-              <el-popconfirm title="确定删除该项目吗？" @onConfirm="removeProject(scope.row)" :disabled="isDeleting(scope.row.id)">
+              <el-popconfirm title="确定删除该项目吗？" @confirm="removeProject(scope.row)" :disabled="isDeleting(scope.row.id)">
                 <el-button slot="reference" type="text" :loading="isDeleting(scope.row.id)"><i class="fa fa-trash mr-1"></i>删除</el-button>
               </el-popconfirm>
             </template>
@@ -107,7 +107,16 @@ export default {
         if (!valid) return
         this.submitLoading = true
         const apiUrl = this.editForm.id ? '/api/project/update' : '/api/project/create'
-        this.$axios.post(apiUrl, { ...this.editForm })
+        // 构建请求参数，编辑时传递project_id
+        const params = {
+          project_name: this.editForm.project_name,
+          description: this.editForm.description,
+          owner: this.editForm.owner
+        }
+        if (this.editForm.id) {
+          params.project_id = this.editForm.id
+        }
+        this.$axios.post(apiUrl, params)
           .then(res => {
             this.$message.success(this.editForm.id ? '更新成功' : '创建成功')
             this.editVisible = false
@@ -122,22 +131,18 @@ export default {
       })
     },
     removeProject (row) {
-      this.$confirm('确定删除该项目吗？', '提示', { type: 'warning' })
+      this.deletingIds.push(row.id)
+      this.$axios.post('/api/project/delete', { project_id: row.id })
         .then(() => {
-          this.deletingIds.push(row.id)
-          this.$axios.post('/api/project/delete', { id: row.id })
-            .then(() => {
-              this.$message.success('删除成功')
-              this.fetchProjects()
-            })
-            .catch(() => {
-              this.$message.error('删除失败')
-            })
-            .finally(() => {
-              this.deletingIds = this.deletingIds.filter(id => id !== row.id)
-            })
+          this.$message.success('删除成功')
+          this.fetchProjects()
         })
-        .catch(() => {})
+        .catch(() => {
+          this.$message.error('删除失败')
+        })
+        .finally(() => {
+          this.deletingIds = this.deletingIds.filter(id => id !== row.id)
+        })
     },
     isDeleting (id) {
       return this.deletingIds.includes(id)
@@ -163,15 +168,29 @@ export default {
 
 <style scoped>
 .project-container {
-  /* padding: 8px; */
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100%;
+}
+.project-container >>> .el-card {
+  margin: 0 !important;
+  height: 100%;
+}
+.project-container >>> .el-card__body {
+  padding: 20px !important;
+  padding-bottom: 0 !important;
+  height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
 }
 .mb-6 {
-  margin-bottom: 16px;
+  margin-bottom: 0 !important;
 }
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 .card-title {
   margin: 0;
@@ -181,7 +200,20 @@ export default {
 }
 .card-body {
   padding-top: 8px;
-  padding-bottom: 0%;
+  padding-bottom: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.project-container >>> .el-table {
+  flex: 1;
+  overflow: auto;
+}
+.project-container >>> .el-table__body-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 300px);
 }
 .mr-1 {
   margin-right: 6px;
@@ -190,5 +222,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   margin-top: 12px;
+  margin-bottom: 0;
+  flex-shrink: 0;
 }
 </style>

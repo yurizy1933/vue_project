@@ -2,82 +2,106 @@
   <div class="project-main-content">
     <el-card>
       <div class="action-bar">
-        <el-input
-          v-model="searchTitle"
-          placeholder="按项目标题搜索"
-          class="search-input"
-          clearable
-          @input="filterProjects"
-        />
+        <h3 class="card-title">需求文档</h3>
         <div style="flex:1"></div>
-        <el-button type="primary" @click="dialogVisible = true">创建项目</el-button>
+        <el-button type="primary" @click="openUploadDialog">上传文档</el-button>
       </div>
-
-      <!-- 项目列表 -->
-      <el-table :data="filteredProjects" style="width: 100%; margin-top: 20px;" class="project-table">
-        <el-table-column type="expand">
-          <template slot-scope="scope">
-            <div :data-project-id="scope.row.id"></div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="项目名称" width="200">
-          <template slot-scope="scope">
-            <span class="cell-content">{{ scope.row.name || 'NO DATA' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="desc" label="描述" min-width="200" max-width="300">
-          <template slot-scope="scope">
-            <div class="cell-content desc-cell ellipsis-cell">
-              {{ scope.row.desc || 'NO DATA' }}
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="需求文档" min-width="400" max-width="800">
-          <template slot-scope="scope">
-            <span class="cell-content doc-cell ellipsis-cell">{{ scope.row.docContent ? scope.row.docContent : '无文档' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="180">
-          <template slot-scope="scope">
-            <el-upload
-              :action="uploadUrl(scope.row.id)"
-              :show-file-list="false"
-              :on-success="(res) => handleUploadSuccess(res, scope.row.id)"
-              :before-upload="beforeUploadTable"
-              accept=".docx"
-            >
-              <a class="action-link upload-link" href="javascript:void(0)">
-                <i class="el-icon-upload"></i> 上传文档
-              </a>
-            </el-upload>
-            <a class="action-link view-link" href="javascript:void(0)" @click="showDoc(scope.row)" :class="{disabled: !scope.row.docContent}" :style="!scope.row.docContent ? 'pointer-events:none;color:#bbb;' : ''">
-              <i class="el-icon-document"></i> 查看文档
-            </a>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
-
-    <!-- 创建项目弹窗 -->
-    <el-dialog :visible.sync="dialogVisible" title="创建项目" width="500px" :modal-append-to-body="false" :append-to-body="true" custom-class="project-dialog">
-      <el-form :model="projectForm" :rules="rules" ref="projectForm" label-width="80px" class="project-form">
-        <el-form-item label="项目名称" prop="name">
-          <el-input v-model="projectForm.name" placeholder="请输入项目名称"></el-input>
+      <!-- 文档搜索栏 -->
+      <div class="search-container">
+        <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form form-inline">
+          <el-form-item label="项目ID">
+            <el-input v-model="searchForm.project_id" placeholder="请输入项目ID" clearable style="width: 260px"></el-input>
+          </el-form-item>
+          <el-form-item label="文档名称">
+            <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 420px"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-search" @click="handleSearch" :loading="listLoading">搜索</el-button>
+            <el-button icon="el-icon-refresh" @click="resetSearch" :disabled="listLoading">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    <!-- 上传文档弹窗 -->
+    <el-dialog :visible.sync="uploadDialogVisible" title="上传项目文档" width="520px" :append-to-body="true" :close-on-click-modal="false">
+      <el-form label-width="88px">
+        <el-form-item label="选择项目">
+          <el-select v-model="selectedProjectId" placeholder="请选择项目" style="width: 100%" filterable :loading="projectsLoading" value-key="value" :popper-append-to-body="false">
+            <el-option v-for="(p, idx) in projectOptions" :key="(p.value != null ? p.value : idx) + ''" :label="p.label" :value="p.value">
+              {{ p.label }}
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="描述" prop="desc">
-          <el-input v-model="projectForm.desc" placeholder="请输入项目描述"></el-input>
+        <el-form-item label="选择文件">
+          <el-upload
+            class="upload-block"
+            action="#"
+            :auto-upload="false"
+            :show-file-list="true"
+            :file-list="fileList"
+            accept=".doc,.docx"
+            :on-change="onFileChange"
+            :before-upload="beforeSelectDoc"
+            :on-exceed="onExceed"
+            :limit="1"
+          >
+            <el-button type="primary">选择 .doc / .docx 文件</el-button>
+            <div slot="tip" class="el-upload__tip">仅支持 .doc 或 .docx 文件，最大 10MB</div>
+          </el-upload>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="createProject">确 定</el-button>
-      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="uploadDialogVisible = false" :disabled="submitting">取 消</el-button>
+        <el-button type="primary" @click="submitDoc" :loading="submitting">提 交</el-button>
+      </span>
     </el-dialog>
+      <!-- 文档列表 -->
+      <div class="table-wrap">
+        <el-table :data="paginatedDocs" style="width: 100%;" class="project-table" v-loading="listLoading">
+          <el-table-column prop="id" label="ID" width="100"></el-table-column>
+          <el-table-column prop="project_name" label="项目名称" min-width="200"></el-table-column>
+          <el-table-column prop="doc_name" label="需求文档" min-width="300" show-overflow-tooltip>
+            <template slot-scope="scope">
+              <span>{{ scope.row.doc_name || scope.row.filename || '—' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="280">
+            <template slot-scope="scope">
+              <el-button type="text" @click="viewDoc(scope.row)"><i class="fa fa-eye mr-1"></i>查看详情</el-button>
+              <el-button type="text" @click="generateCases(scope.row)" :loading="isGenerating(scope.row.id)" :disabled="isGenerating(scope.row.id)"><i class="fa fa-magic mr-1"></i>生成用例</el-button>
+              <el-popconfirm title="确定删除该文档吗？" @confirm="deleteDoc(scope.row)" :disabled="isDeleting(scope.row.id)">
+                <el-button slot="reference" type="text" :loading="isDeleting(scope.row.id)"><i class="fa fa-trash mr-1"></i>删除</el-button>
+              </el-popconfirm>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页组件 -->
+        <div class="pagination-wrap">
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="totalDocs">
+          </el-pagination>
+        </div>
+      </div>
+    </el-card>
 
-    <el-dialog :visible.sync="docDialogVisible" width="60%" title="需求文档内容"  custom-class="top-dialog"
-  :modal-append-to-body="false"
-  :append-to-body="true">
-      <pre v-if="currentDoc" class="doc-content">{{ currentDoc }}</pre>
+    <el-dialog
+      :visible.sync="docDialogVisible"
+      width="60%"
+      custom-class="top-dialog"
+      :modal="true"
+      :append-to-body="true"
+      :modal-append-to-body="true"
+      :destroy-on-close="false"
+      :lock-scroll="false">
+      <div slot="title" class="dialog-title">{{ docTitle }}</div>
+      <div v-if="currentDoc" class="doc-content">
+        <div class="doc-body" v-html="formattedDocContent"></div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -87,25 +111,151 @@ export default {
   name: 'projectManagement',
   data () {
     return {
-      dialogVisible: false,
-      projectForm: { name: '', desc: '' },
-      rules: {
-        name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }]
-      },
       projects: [],
       filteredProjects: [],
       searchTitle: '',
+      // 文档列表
+      docs: [],
+      listLoading: false,
+      deletingIds: [],
+      generatingIds: [],
+      // 分页相关
+      currentPage: 1,
+      pageSize: 10,
+      totalDocs: 0,
+      // 搜索表单
+      searchForm: {
+        project_id: '',
+        doc_name: ''
+      },
       docDialogVisible: false,
       currentDoc: '',
-      activeProjectId: null
+      docTitle: '',
+      activeProjectId: null,
+      // 新增：上传文档弹窗与数据
+      uploadDialogVisible: false,
+      projectOptions: [],
+      projectsLoading: false,
+      selectedProjectId: null,
+      fileList: [],
+      submitting: false
+    }
+  },
+  computed: {
+    formattedDocContent () {
+      if (!this.currentDoc) return ''
+      // 将换行符转换为HTML换行
+      return this.currentDoc.replace(/\n/g, '<br>')
+    },
+    paginatedDocs () {
+      const start = (this.currentPage - 1) * this.pageSize
+      const end = start + this.pageSize
+      return this.docs.slice(start, end)
     }
   },
   created () {
     this.fetchProjects()
+    this.fetchDocs()
   },
   methods: {
+    fetchDocs () {
+      this.listLoading = true
+      // 构建搜索参数
+      const params = {}
+      if (this.searchForm.project_id) {
+        params.project_id = this.searchForm.project_id
+      }
+      if (this.searchForm.doc_name) {
+        params.doc_name = this.searchForm.doc_name
+      }
+      this.$axios.get('/api/doc/get', { params })
+        .then(res => {
+          const raw = res && res.data
+          const list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.data) ? raw.data : (raw && Array.isArray(raw.list) ? raw.list : []))
+          // 规范化
+          this.docs = list.map(it => ({
+            id: it.id != null ? it.id : it.doc_id,
+            project_name: it.project_name || it.project || '',
+            doc_name: it.doc_name || it.filename || it.name || ''
+          }))
+          // 设置总数
+          this.totalDocs = this.docs.length
+        })
+        .catch(() => {
+          this.$message.error('加载文档列表失败')
+          this.docs = []
+        })
+        .finally(() => {
+          this.listLoading = false
+        })
+    },
+    isDeleting (id) {
+      return this.deletingIds.includes(id)
+    },
+    isGenerating (id) {
+      return this.generatingIds.includes(id)
+    },
+    generateCases (row) {
+      const docId = row && (row.id != null ? row.id : row.doc_id)
+      if (!docId) return
+      if (!this.generatingIds.includes(docId)) this.generatingIds.push(docId)
+      this.$axios.post('/api/ai_job/run', { doc_id: docId })
+        .then(() => {
+          this.$message.success('已提交生成任务')
+        })
+        .catch((err) => {
+          this.$message.error('生成任务提交失败' + (err && err.message ? `：${err.message}` : ''))
+        })
+        .finally(() => {
+          this.generatingIds = this.generatingIds.filter(x => x !== docId)
+        })
+    },
+    viewDoc (row) {
+      const id = row.id
+      if (!id) return
+      this.$axios.get('/api/doc/detail', { params: { id } })
+        .then(res => {
+          const data = res && res.data && res.data.data
+          console.log(data)
+          if (data) {
+            this.docTitle = data.filename || ''
+            this.currentDoc = data.file_content || ''
+          } else {
+            this.docTitle = ''
+            this.currentDoc = ''
+          }
+          this.docDialogVisible = true
+        })
+        .catch(() => {
+          this.$message.error('获取文档详情失败')
+        })
+    },
+    deleteDoc (row) {
+      const docId = row.id
+      if (!docId) return
+      this.deletingIds.push(docId)
+      this.$axios.post('/api/doc/delete', { doc_id: docId })
+        .then(() => {
+          this.$message.success('删除成功')
+          this.fetchDocs()
+        })
+        .catch(() => {
+          this.$message.error('删除失败')
+        })
+        .finally(() => {
+          this.deletingIds = this.deletingIds.filter(x => x !== docId)
+        })
+    },
+    handleSearch () {
+      this.fetchDocs()
+    },
+    resetSearch () {
+      this.searchForm.project_id = ''
+      this.searchForm.doc_name = ''
+      this.fetchDocs()
+    },
     fetchProjects () {
-      this.$axios.get('/api/get/projects')
+      this.$axios.get('/api/project/get')
         .then(res => {
           this.projects = res.data
           this.filteredProjects = res.data
@@ -123,6 +273,103 @@ export default {
         this.filteredProjects = this.projects.filter(p => p.name.toLowerCase().includes(keyword))
       }
     },
+    openUploadDialog () {
+      this.uploadDialogVisible = true
+      this.selectedProjectId = null
+      this.fileList = []
+      // 每次打开都刷新一次项目列表，避免下拉为空或数据过期
+      this.$nextTick(() => {
+        this.loadProjectOptions()
+      })
+    },
+    loadProjectOptions () {
+      this.projectsLoading = true
+      this.$axios.get('/api/project/get')
+        .then(res => {
+          const raw = res && res.data
+          // 调试输出，帮助确认真实结构
+          console.log('[loadProjectOptions] raw:', raw)
+          let list = []
+          if (Array.isArray(raw)) {
+            list = raw
+          } else if (raw && Array.isArray(raw.data)) {
+            list = raw.data
+          } else if (raw && Array.isArray(raw.list)) {
+            list = raw.list
+          } else {
+            list = []
+          }
+          console.log('[loadProjectOptions] normalized list:', list)
+          this.projectOptions = Array.isArray(list)
+            ? list.map(it => {
+              const id = it.id != null ? it.id : (it.project_id != null ? it.project_id : it.ID)
+              const name = it.project_name || it.name || `项目${id || ''}`
+              return { value: id, label: name }
+            })
+            : []
+          this.projectOptions = this.projectOptions.filter(it => it && (it.value != null) && it.label)
+          console.log('[loadProjectOptions] options:', this.projectOptions)
+        })
+        .catch(() => {
+          this.$message.error('加载项目列表失败')
+        })
+        .finally(() => {
+          this.projectsLoading = false
+        })
+    },
+    beforeSelectDoc (file) {
+      // 这里只作为占位，真正校验在 onFileChange 里
+      return false
+    },
+    onExceed () {
+      this.$message.warning('一次只能上传一个文件')
+    },
+    onFileChange (file, fileList) {
+      const isDoc = file.raw && /\.(doc|docx)$/i.test(file.raw.name)
+      if (!isDoc) {
+        this.$message.error('仅支持 .doc 或 .docx 格式文件')
+        this.fileList = []
+        return
+      }
+      // 简单大小限制 10MB
+      const isLt10M = file.size / 1024 / 1024 < 10
+      if (!isLt10M) {
+        this.$message.error('文件大小不能超过 10MB')
+        this.fileList = []
+        return
+      }
+      this.fileList = fileList.slice(-1)
+    },
+    submitDoc () {
+      if (!this.selectedProjectId) {
+        this.$message.warning('请选择项目')
+        return
+      }
+      if (!this.fileList.length) {
+        this.$message.warning('请先选择 .doc 文件')
+        return
+      }
+      const form = new FormData()
+      // selectedProjectId 可能是值对象 value
+      const pid = typeof this.selectedProjectId === 'object' && this.selectedProjectId !== null ? this.selectedProjectId.value : this.selectedProjectId
+      form.append('project_id', pid)
+      form.append('file', this.fileList[0].raw)
+      this.submitting = true
+      this.$axios.post('/api/doc/create', form, { headers: { 'Content-Type': 'multipart/form-data' } })
+        .then(() => {
+          this.$message.success('上传成功')
+          this.uploadDialogVisible = false
+          this.selectedProjectId = null
+          this.fileList = []
+          this.loadProjectOptions()
+        })
+        .catch(() => {
+          this.$message.error('上传失败')
+        })
+        .finally(() => {
+          this.submitting = false
+        })
+    },
     scrollToProject (id) {
       this.$nextTick(() => {
         const row = document.querySelector(`[data-project-id='${id}']`)
@@ -131,21 +378,6 @@ export default {
           row.classList.add('row-highlight')
           setTimeout(() => row.classList.remove('row-highlight'), 1200)
         }
-      })
-    },
-    createProject () {
-      this.$refs.projectForm.validate(valid => {
-        if (!valid) return
-        this.$axios.post('/api/create/project', this.projectForm)
-          .then(() => {
-            this.$message.success('项目创建成功')
-            this.projectForm = { name: '', desc: '' }
-            this.dialogVisible = false
-            this.fetchProjects()
-          })
-          .catch(err => {
-            this.$message.error('创建项目失败: ' + ((err.response && err.response.data && err.response.data.message) || err.message || '未知错误'))
-          })
       })
     },
     showDoc (row) {
@@ -165,6 +397,14 @@ export default {
     handleUploadSuccess (response, projectId) {
       this.$message.success('上传成功')
       this.fetchProjects()
+    },
+    // 分页处理方法
+    handleSizeChange (val) {
+      this.pageSize = val
+      this.currentPage = 1
+    },
+    handleCurrentChange (val) {
+      this.currentPage = val
     }
   }
 }
@@ -184,8 +424,44 @@ export default {
   align-items: center;
   gap: 16px;
 }
-.search-input {
-  width: 260px;
+.search-container {
+  margin: 16px 0;
+  padding: 24px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e4e7ed;
+}
+
+/* inline 表单，与“测试用例”页保持一致 */
+.form-inline {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.form-inline .el-form-item {
+  margin-bottom: 0;
+}
+.form-inline .el-form-item__label {
+  line-height: 40px;
+  padding-right: 8px;
+  color: #606266;
+}
+.form-inline .el-input__inner,
+.form-inline .el-select .el-input__inner {
+  height: 40px;
+}
+.form-inline .el-button {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 6px;
+}
+.card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
 }
 .row-highlight {
   animation: highlightRow 1.2s;
@@ -195,25 +471,21 @@ export default {
   0% { background: #fffde7; }
   100% { background: none; }
 }
-.project-form {
-  margin-bottom: 0;
-  background: #f8fafc;
-  padding: 16px 24px 0 0;
-  border-radius: 8px;
-}
-.el-dialog__body {
-  padding: 20px 20px 20px 20px;
-}
+/* removed project-form dialog styles as create-project feature is deleted */
 .doc-content {
   /* width: 100%; */
   min-height: 300px;
   font-family: inherit;
+  background: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 20px rgba(33,150,243,0.08);
+}
+.doc-body {
   font-size: 15px;
-  white-space: pre-wrap;
-  background: #f8fafc;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 16px;
+  line-height: 1.75;
+  color: #333;
 }
 .doc-preview {
   margin-top: 8px;
@@ -232,20 +504,40 @@ export default {
 .content-body:hover {
   box-shadow: 0 8px 32px rgba(33,150,243,0.16);
 }
-.project-dialog {
-  z-index: 3000 !important;
+.table-wrap {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
 }
-.el-dialog__wrapper {
-  z-index: 3000 !important;
-}
-.v-modal {
-  z-index: 2999 !important;
-}
+
 .project-table {
-  min-width: 800px;
-  max-width: 1200px;
-  min-height: 350px;
-  max-height: 1200px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.project-table >>> .el-table__header {
+  background: #f5f7fa;
+}
+
+.project-table >>> .el-table__header th {
+  background: #f5f7fa;
+  color: #606266;
+  font-weight: 600;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.project-table >>> .el-table__body tr:hover {
+  background: #f5f7fa;
+}
+
+.pagination-wrap {
+  margin-top: 20px;
+  padding: 16px 0;
+  text-align: right;
+  background: #fff;
+  border-radius: 8px;
 }
 .cell-content {
   word-break: break-word;
@@ -306,5 +598,52 @@ export default {
   color: #bbb !important;
   cursor: not-allowed;
   text-decoration: none;
+}
+
+.upload-block {
+  width: 100%;
+}
+
+/* 弹窗标题样式 */
+.dialog-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: #303133;
+  margin: 0;
+  padding: 0;
+}
+
+/* 确保弹窗在遮罩层之上 */
+.top-dialog {
+  z-index: 9999 !important;
+}
+
+.top-dialog .el-dialog__wrapper {
+  z-index: 9999 !important;
+}
+
+.top-dialog .v-modal {
+  z-index: 9998 !important;
+}
+
+/* 强制弹窗内容显示 */
+.top-dialog .el-dialog {
+  z-index: 10000 !important;
+  position: relative !important;
+}
+
+.top-dialog .el-dialog__body {
+  z-index: 10001 !important;
+  position: relative !important;
+}
+
+/* 防止弹窗导致页面变宽 */
+body {
+  overflow-y: scroll !important;
+}
+
+.top-dialog .el-dialog__wrapper {
+  padding-right: 0 !important;
 }
 </style>

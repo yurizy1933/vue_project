@@ -103,7 +103,7 @@
             <el-pagination small layout="prev, pager, next" :total="50" @current-change="click_button_three"></el-pagination>
         </div>
         <div>
-            <el-table stripe border :row-class-name="tableRowClassName"  max-height="250"   height="250"
+            <el-table stripe border :row-class-name="tableRowClassName" style="width:100%"
             :data="tableData">
                 <el-table-column sortable prop="id" label="ID" width="80" ></el-table-column>
                 <el-table-column prop="name" label="名字" width="120"></el-table-column>
@@ -136,7 +136,7 @@
             <!-- Table -->
             <el-button type="text" @click="dialogTableVisible = true">打开嵌套表格的 Dialog</el-button>
             <el-dialog title="收货地址" :visible.sync="dialogTableVisible">
-                <el-table :data="gridData">
+                <el-table :data="gridData" style="width:100%">
                     <el-table-column property="date" label="日期" width="150"></el-table-column>
                     <el-table-column property="name" label="姓名" width="200"></el-table-column>
                     <el-table-column property="address" label="地址"></el-table-column>

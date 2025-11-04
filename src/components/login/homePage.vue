@@ -99,8 +99,8 @@
         </el-main>
       </div>
       <!-- 页脚 -->
-      <el-footer class="footer">
-        © 2025 AI生成测试平台 | 版本 v1.0.0
+      <el-footer class="footer" style="height: 40px;">
+        ©(:◎)≡ 2025 AI生成测试平台 | 版本 v1.0.0
       </el-footer>
     </div>
   </template>
@@ -275,6 +275,7 @@ export default {
   flex-direction: column;
   position: relative;
   z-index: 1;
+  height: calc(100vh - 120px);
 }
 .content-header {
   margin-bottom: 20px;
@@ -295,20 +296,34 @@ export default {
   border-radius: 16px;
   /* padding: 32px 24px; */
   box-shadow: 0 4px 24px rgba(33,150,243,0.10);
-  min-height: 300px;
+  min-height: calc(100vh - 240px);
+  height: calc(100vh - 240px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   transition: box-shadow 0.2s;
+  margin-bottom: 40px;
 }
 .content-body:hover {
   box-shadow: 0 8px 32px rgba(33,150,243,0.16);
 }
 .footer {
   text-align: center;
-  padding: 12px 0 0px 0;
+  padding: 8px 0;
   color: #90a4ae;
   font-size: 14px;
   border-top: 1px solid #e0e0e0;
   background: transparent;
   letter-spacing: 1px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
 }
 @media (max-width: 900px) {
   .main-content {

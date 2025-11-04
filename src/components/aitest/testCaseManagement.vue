@@ -31,7 +31,7 @@
     <!-- 用例列表 -->
     <el-card>
       <div class="card-body1">
-        <el-table :data="filteredCases" border stripe size="small" v-loading="listLoading">
+        <el-table :data="filteredCases" border stripe size="small" v-loading="listLoading" style="width: 100%">
           <el-table-column type="index" width="60" label="#" />
           <el-table-column prop="name" label="用例名称" min-width="200"></el-table-column>
           <el-table-column prop="precondition" label="前置条件" min-width="220" show-overflow-tooltip></el-table-column>
@@ -190,8 +190,18 @@ export default {
       this.currentCase = {}
       this.$axios.get('/api/testcase/detail', { params: { caseid: row.id } })
         .then(res => {
-          const data = res && res.data ? res.data : {}
-          this.currentCase = data || {}
+          const raw = res && res.data
+          const data = raw && (raw.data || raw.detail || raw)
+          const status = data.status != null ? String(data.status) : ''
+          this.currentCase = {
+            id: data.id != null ? data.id : (data.case_id != null ? data.case_id : data.caseid),
+            name: data.title || data.name || data.case_name || '',
+            precondition: data.precondition || data.pre || '',
+            steps: data.test_steps || data.steps || data.step || '',
+            expected: data.expected_result || data.expected || data.expect || '',
+            level: data.priority != null ? String(data.priority) : (data.level != null ? String(data.level) : ''),
+            status: status === 'active' ? 'enabled' : (status === 'inactive' ? 'disabled' : status)
+          }
         })
         .catch(() => {
           this.$message.error('加载详情失败')
@@ -202,7 +212,16 @@ export default {
     },
     openEdit (row) {
       if (row) {
-        this.editForm = { ...row }
+        const status = row.status != null ? String(row.status) : ''
+        this.editForm = {
+          id: row.id != null ? row.id : (row.case_id != null ? row.case_id : row.caseid) || null,
+          name: row.name || row.title || row.case_name || '',
+          precondition: row.precondition || row.pre || '',
+          steps: row.steps || row.test_steps || row.step || '',
+          expected: row.expected || row.expected_result || row.expect || '',
+          level: row.level != null ? String(row.level) : (row.priority != null ? String(row.priority) : ''),
+          status: status === 'active' ? 'enabled' : (status === 'inactive' ? 'disabled' : status)
+        }
       } else {
         this.editForm = { id: null, name: '', precondition: '', steps: '', expected: '', level: '', status: '' }
       }
@@ -260,8 +279,27 @@ export default {
       }
       this.$axios.get('/api/testcase/get', { params })
         .then(res => {
-          const list = res && res.data ? res.data : []
-          this.cases = Array.isArray(list) ? list : []
+          const raw = res && res.data
+          const arr = Array.isArray(raw)
+            ? raw
+            : (raw && Array.isArray(raw.data))
+              ? raw.data
+              : (raw && Array.isArray(raw.list))
+                ? raw.list
+                : []
+          // 规范化列表项，保证表格与编辑表单字段一致
+          this.cases = arr.map(it => {
+            const status = it.status != null ? String(it.status) : ''
+            return {
+              id: it.id != null ? it.id : (it.case_id != null ? it.case_id : it.caseid),
+              name: it.name || it.title || it.case_name || '',
+              precondition: it.precondition || it.pre || '',
+              steps: it.steps || it.test_steps || it.step || '',
+              expected: it.expected || it.expected_result || it.expect || '',
+              level: it.level != null ? String(it.level) : (it.priority != null ? String(it.priority) : ''),
+              status: status === 'active' ? 'enabled' : (status === 'inactive' ? 'disabled' : status)
+            }
+          })
         })
         .catch(() => {
           this.$message.error('加载列表失败')
@@ -276,9 +314,7 @@ export default {
 </script>
 
 <style scoped>
-.testcase-container {
-  /* padding: 8px; */
-}
+/* container present for future layout hooks */
 .mb-6 {
   margin-bottom: 16px;
 }
@@ -298,6 +334,17 @@ export default {
 }
 .card-body1 {
   padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.card-body1 >>> .el-table {
+  flex: 1;
+}
+.card-body1 >>> .el-table__body-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 320px);
 }
 .search-form {
   display: flex;

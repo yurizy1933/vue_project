@@ -11,6 +11,7 @@ import router from '.'
 // import DocManagement from '../components/aitest/docManagement.vue'
 import projectPrdManagement from '../components/aitest/projectPrdManagement.vue'
 import testCaseManagement from '../components/aitest/testCaseManagement.vue'
+import aiTestCase from '../components/aitest/aitestcase.vue'
 import projectManagement from '../components/system/projectManagement.vue'
 
 Vue.use(Router)
@@ -60,6 +61,11 @@ export default new Router({
           path: 'testCaseManagement',
           name: 'testCaseManagement',
           component: testCaseManagement
+        },
+        {
+          path: 'aitestcase',
+          name: 'aitestcase',
+          component: aiTestCase
         },
         {
           path: 'projectManagement',
