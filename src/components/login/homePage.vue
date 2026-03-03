@@ -49,9 +49,13 @@
                 <i class="fa fa-file-text-o"></i>
                 <span>需求文档</span>
               </el-menu-item>
-              <el-menu-item index="/testCaseManagement">
+              <!-- <el-menu-item index="/testCaseManagement">
                 <i class="fa fa-file-text-o"></i>
                 <span>测试用例</span>
+              </el-menu-item> -->
+              <el-menu-item index="/aitestcase">
+                <i class="fa fa-file-text-o"></i>
+                <span>用例任务</span>
               </el-menu-item>
             </el-submenu>
             <el-submenu index="ai-tools">
@@ -59,9 +63,17 @@
                 <i class="fa fa-magic"></i>
                 <span>接口测试</span>
               </template>
-              <el-menu-item index="/docManagement">
+              <el-menu-item index="/apiDocManagement">
                 <i class="fa fa-file-text-o"></i>
-                <span>需求管理</span>
+                <span>接口文档管理</span>
+              </el-menu-item>
+              <el-menu-item index="/apiInterfaceManagement">
+                <i class="fa fa-cogs"></i>
+                <span>接口管理</span>
+              </el-menu-item>
+              <el-menu-item index="/testDataManagement">
+                <i class="fa fa-database"></i>
+                <span>测试数据管理</span>
               </el-menu-item>
               <el-menu-item index="/docManagement">
                 <i class="fa fa-file-text-o"></i>
@@ -140,13 +152,15 @@ export default {
       console.log(routeName)
       const titles = {
         'HomePage': '仪表盘',
-        'TextGeneration': '文本生成',
-        'ImageGeneration': '图像生成',
         'CodeGeneration': '代码生成',
         'projectManagement': '项目管理',
         'UserManagement': '用户管理',
         'projectPrdManagement': '需求文档管理',
-        'testCaseManagement': '测试用例'
+        'testCaseManagement': '测试用例',
+        'aitestcase': '用例任务管理',
+        'apiDocManagement': '接口文档管理',
+        'apiInterfaceManagement': '接口管理',
+        'testDataManagement': '测试数据管理'
       }
       this.pageTitle = titles[routeName] || '未知页面'
     }

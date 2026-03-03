@@ -8,12 +8,11 @@
           <i class="fa fa-plus mr-1"></i>新增项目
         </el-button>
       </div>
-    <!-- </el-card> -->
 
     <!-- 项目列表 -->
-    <!-- <el-card> -->
       <div class="card-body">
-        <el-table :data="projects" border stripe size="small" v-loading="listLoading" style="width: 100%">
+        <div class="table-wrap">
+          <el-table :data="projects" border stripe size="small" v-loading="listLoading" class="project-table" style="width: 100%">
           <el-table-column prop="id" label="项目编号" width="100"></el-table-column>
           <el-table-column prop="project_name" label="项目名称" min-width="180"></el-table-column>
           <el-table-column prop="description" label="项目描述" min-width="250" show-overflow-tooltip></el-table-column>
@@ -27,7 +26,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="table-footer">
+        <div class="pagination-wrap">
           <el-pagination
             background
             layout="prev, pager, next, jumper"
@@ -35,6 +34,7 @@
             :page-size="pageSize"
             :current-page.sync="currentPage"
           />
+        </div>
         </div>
       </div>
     </el-card>
@@ -177,14 +177,11 @@ export default {
   height: 100%;
 }
 .project-container >>> .el-card__body {
-  padding: 20px !important;
+  padding: 16px 20px !important;
   padding-bottom: 0 !important;
   height: calc(100% - 40px);
   display: flex;
   flex-direction: column;
-}
-.mb-6 {
-  margin-bottom: 0 !important;
 }
 .card-header {
   display: flex;
@@ -218,11 +215,49 @@ export default {
 .mr-1 {
   margin-right: 6px;
 }
-.table-footer {
+
+/* 表格容器 */
+.table-wrap {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
-  margin-bottom: 0;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* 统一表格样式 */
+.project-table {
+  width: 100%;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.project-table >>> .el-table__header {
+  background: #f5f7fa;
+}
+
+.project-table >>> .el-table__header th {
+  background: #f5f7fa;
+  color: #606266;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.project-table >>> .el-table__body td {
+  font-size: 14px;
+  color: #303133;
+}
+
+.project-table >>> .el-table__body tr:hover {
+  background: #f5f7fa;
+}
+
+/* 分页样式 */
+.pagination-wrap {
+  margin-top: 16px;
+  padding: 8px 0;
+  text-align: right;
   flex-shrink: 0;
 }
 </style>

@@ -21,6 +21,8 @@
           </el-form-item>
         </el-form>
       </div>
+    </el-card>
+
     <!-- 上传文档弹窗 -->
     <el-dialog :visible.sync="uploadDialogVisible" title="上传项目文档" width="520px" :append-to-body="true" :close-on-click-modal="false">
       <el-form label-width="88px">
@@ -87,7 +89,6 @@
           </el-pagination>
         </div>
       </div>
-    </el-card>
 
     <el-dialog
       :visible.sync="docDialogVisible"
@@ -201,7 +202,12 @@ export default {
       if (!this.generatingIds.includes(docId)) this.generatingIds.push(docId)
       this.$axios.post('/api/ai_job/run', { doc_id: docId })
         .then(() => {
-          this.$message.success('已提交生成任务')
+          this.$message.success('已提交生成任务，正在跳转...')
+          // 跳转到 aitestcase 页面，并传递 doc_id 参数
+          this.$router.push({
+            path: '/aitestcase',
+            query: { doc_id: docId }
+          })
         })
         .catch((err) => {
           this.$message.error('生成任务提交失败' + (err && err.message ? `：${err.message}` : ''))
@@ -413,11 +419,19 @@ export default {
 <style scoped>
 .project-main-content {
   flex: 1;
-  /* margin: 32px 32px 32px 24px; */
   min-width: 0;
-  border-radius: 12px;
+  border-radius: 0;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
+
+.project-main-content >>> .el-card {
+  margin-bottom: 0;
+}
+
+.project-main-content >>> .el-card__body {
+  padding: 16px 20px;
+}
+
 .action-bar {
   margin: 16px 0 0 0;
   display: flex;
@@ -425,37 +439,50 @@ export default {
   gap: 16px;
 }
 .search-container {
-  margin: 16px 0;
-  padding: 24px;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e4e7ed;
+  padding: 20px 24px;
+  background: #f8f9fb;
+  border-radius: 8px;
+  border: none;
 }
 
-/* inline 表单，与“测试用例”页保持一致 */
+/* inline 表单样式 */
 .form-inline {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
   flex-wrap: wrap;
 }
+
 .form-inline .el-form-item {
   margin-bottom: 0;
 }
+
 .form-inline .el-form-item__label {
   line-height: 40px;
-  padding-right: 8px;
-  color: #606266;
+  padding-right: 12px;
+  color: #303133;
+  font-weight: 500;
+  white-space: nowrap;
 }
+
 .form-inline .el-input__inner,
 .form-inline .el-select .el-input__inner {
   height: 40px;
+  border-radius: 6px;
+  border: 1px solid #dcdfe6;
+  transition: all 0.3s;
 }
+
+.form-inline .el-input__inner:focus,
+.form-inline .el-select .el-input__inner:focus {
+  border-color: #409eff;
+}
+
 .form-inline .el-button {
   height: 40px;
-  padding: 0 20px;
+  padding: 0 24px;
   border-radius: 6px;
+  font-weight: 500;
 }
 .card-title {
   margin: 0;
@@ -478,7 +505,7 @@ export default {
   font-family: inherit;
   background: #ffffff;
   border: none;
-  border-radius: 10px;
+  border-radius: 0;
   padding: 18px 20px;
   box-shadow: 0 4px 20px rgba(33,150,243,0.08);
 }
@@ -495,7 +522,7 @@ export default {
 }
 .content-body {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 0;
   padding: 0 !important;
   box-shadow: 0 4px 24px rgba(33,150,243,0.10);
   min-height: 300px;
@@ -512,9 +539,10 @@ export default {
 
 .project-table {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
 }
 
 .project-table >>> .el-table__header {
@@ -525,7 +553,13 @@ export default {
   background: #f5f7fa;
   color: #606266;
   font-weight: 600;
+  font-size: 14px;
   border-bottom: 1px solid #ebeef5;
+}
+
+.project-table >>> .el-table__body td {
+  font-size: 14px;
+  color: #303133;
 }
 
 .project-table >>> .el-table__body tr:hover {
@@ -533,11 +567,9 @@ export default {
 }
 
 .pagination-wrap {
-  margin-top: 20px;
-  padding: 16px 0;
+  margin-top: 16px;
+  padding: 8px 0;
   text-align: right;
-  background: #fff;
-  border-radius: 8px;
 }
 .cell-content {
   word-break: break-word;
@@ -555,11 +587,11 @@ export default {
 }
 .desc-cell::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 3px;
+  border-radius: 0;
 }
 .desc-cell::-webkit-scrollbar-thumb {
   background: #c1c1c1;
-  border-radius: 3px;
+  border-radius: 0;
 }
 .desc-cell::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
@@ -618,6 +650,10 @@ export default {
 .top-dialog {
   z-index: 9999 !important;
 }
+/* 弹窗直角样式 */
+.top-dialog >>> .el-dialog {
+  border-radius: 0 !important;
+}
 
 .top-dialog .el-dialog__wrapper {
   z-index: 9999 !important;
@@ -645,5 +681,12 @@ body {
 
 .top-dialog .el-dialog__wrapper {
   padding-right: 0 !important;
+}
+</style>
+
+<style>
+/* 全局样式：弹窗直角（因为弹窗是 append-to-body） */
+.top-dialog .el-dialog {
+  border-radius: 0 !important;
 }
 </style>

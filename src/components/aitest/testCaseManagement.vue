@@ -1,37 +1,17 @@
 <template>
   <div class="testcase-container">
-    <!-- 顶部搜索卡片 -->
-    <el-card class="mb-6">
-      <div class="card-header">
+    <el-card>
+      <div class="action-bar">
         <h3 class="card-title">测试用例</h3>
+        <div style="flex:1"></div>
         <el-button type="primary" @click="openEdit()" :disabled="submitLoading">
           <i class="fa fa-plus mr-1"></i>新建用例
         </el-button>
       </div>
-      <div class="card-body">
-        <el-form :inline="true" :model="searchForm" label-width="90px" class="search-form">
-          <el-form-item label="项目ID">
-            <el-input v-model="searchForm.project_id" placeholder="请输入项目ID" clearable style="width: 220px"></el-input>
-          </el-form-item>
-          <el-form-item label="状态">
-            <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 220px">
-              <el-option label="全部" :value="''"></el-option>
-              <el-option label="启用" value="enabled"></el-option>
-              <el-option label="禁用" value="disabled"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="handleSearch" :loading="listLoading">搜索</el-button>
-            <el-button icon="el-icon-refresh" @click="resetSearch" :disabled="listLoading">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-card>
 
-    <!-- 用例列表 -->
-    <el-card>
-      <div class="card-body1">
-        <el-table :data="filteredCases" border stripe size="small" v-loading="listLoading" style="width: 100%">
+      <!-- 用例列表 -->
+      <div class="table-wrap">
+        <el-table :data="filteredCases" border stripe size="small" v-loading="listLoading" class="project-table" style="width: 100%">
           <el-table-column type="index" width="60" label="#" />
           <el-table-column prop="name" label="用例名称" min-width="200"></el-table-column>
           <el-table-column prop="precondition" label="前置条件" min-width="220" show-overflow-tooltip></el-table-column>
@@ -57,10 +37,11 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="table-footer">
+        <!-- 分页组件 -->
+        <div class="pagination-wrap">
           <el-pagination
             background
-            layout="prev, pager, next, jumper"
+            layout="total, prev, pager, next, jumper"
             :total="filteredCases.length"
             :page-size="pageSize"
             :current-page.sync="currentPage"
@@ -70,17 +51,38 @@
     </el-card>
 
     <!-- 查看抽屉 -->
-    <el-drawer :visible.sync="viewVisible" title="用例详情" size="50%">
+    <el-drawer
+      :visible.sync="viewVisible"
+      title="用例详情"
+      size="60%"
+      :close-on-press-escape="true"
+      :close-on-click-modal="false"
+      :modal="true"
+      :modal-append-to-body="true"
+      :append-to-body="true"
+      class="case-detail-drawer">
       <div class="drawer-content" v-loading="detailLoading">
-        <el-descriptions :column="1" border>
-          <el-descriptions-item label="用例名称">{{ currentCase.name }}</el-descriptions-item>
-          <el-descriptions-item label="前置条件">{{ currentCase.precondition }}</el-descriptions-item>
-          <el-descriptions-item label="执行步骤">{{ currentCase.steps }}</el-descriptions-item>
-          <el-descriptions-item label="预期结果">{{ currentCase.expected }}</el-descriptions-item>
-          <el-descriptions-item label="用例等级">
-            <el-tag :type="levelTagType(currentCase.level)">{{ currentCase.level }}</el-tag>
+        <el-descriptions :column="1" border class="case-detail-descriptions">
+          <el-descriptions-item label="用例名称" :span="1">
+            <div class="detail-text">{{ currentCase.name || '-' }}</div>
           </el-descriptions-item>
-          <el-descriptions-item label="状态">{{ currentCase.status || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="前置条件" :span="1">
+            <div class="detail-text">{{ currentCase.precondition || '-' }}</div>
+          </el-descriptions-item>
+          <el-descriptions-item label="执行步骤" :span="1">
+            <div class="detail-text detail-steps">{{ currentCase.steps || '-' }}</div>
+          </el-descriptions-item>
+          <el-descriptions-item label="预期结果" :span="1">
+            <div class="detail-text">{{ currentCase.expected || '-' }}</div>
+          </el-descriptions-item>
+          <el-descriptions-item label="用例等级" :span="1">
+            <el-tag :type="levelTagType(currentCase.level)" size="medium">{{ currentCase.level || '-' }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="状态" :span="1">
+            <el-tag :type="currentCase.status === 'enabled' ? 'success' : 'info'" size="medium">
+              {{ currentCase.status === 'enabled' ? '启用' : (currentCase.status === 'disabled' ? '禁用' : (currentCase.status || '-')) }}
+            </el-tag>
+          </el-descriptions-item>
         </el-descriptions>
       </div>
     </el-drawer>
@@ -129,7 +131,9 @@ export default {
     return {
       searchForm: {
         project_id: '',
-        status: ''
+        status: '',
+        job_id: '',
+        doc_id: ''
       },
       cases: [],
       currentPage: 1,
@@ -138,7 +142,7 @@ export default {
       editVisible: false,
       currentCase: {},
       editForm: {
-        id: null,
+        caseid: null,
         name: '',
         precondition: '',
         steps: '',
@@ -160,6 +164,17 @@ export default {
     }
   },
   created () {
+    // 如果路由中有 job_id 或 doc_id 参数，自动设置到搜索表单中
+    if (this.$route.query.job_id) {
+      // 如果有 job_id，可能需要通过接口获取对应的 doc_id 或 project_id
+      // 这里先尝试直接使用 job_id 作为筛选条件
+      this.searchForm.job_id = this.$route.query.job_id
+    }
+    if (this.$route.query.doc_id) {
+      // 如果有 doc_id，可能需要通过接口获取对应的 project_id
+      // 这里先尝试直接使用 doc_id 作为筛选条件
+      this.searchForm.doc_id = this.$route.query.doc_id
+    }
     this.fetchCases()
   },
   computed: {
@@ -275,8 +290,16 @@ export default {
       this.listLoading = true
       const params = {
         project_id: this.searchForm.project_id || undefined,
-        status: this.searchForm.status || undefined
+        status: this.searchForm.status || undefined,
+        job_id: this.searchForm.job_id || undefined,
+        doc_id: this.searchForm.doc_id || undefined
       }
+      // 移除 undefined 值
+      Object.keys(params).forEach(key => {
+        if (params[key] === undefined) {
+          delete params[key]
+        }
+      })
       this.$axios.get('/api/testcase/get', { params })
         .then(res => {
           const raw = res && res.data
@@ -314,51 +337,189 @@ export default {
 </script>
 
 <style scoped>
-/* container present for future layout hooks */
-.mb-6 {
-  margin-bottom: 16px;
+.testcase-container {
+  flex: 1;
+  min-width: 0;
 }
-.card-header {
+
+.testcase-container >>> .el-card {
+  margin-bottom: 0;
+}
+
+.testcase-container >>> .el-card__body {
+  padding: 16px 20px;
+}
+
+.action-bar {
+  margin: 16px 0 0 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 16px;
 }
+
 .card-title {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: #303133;
 }
-.card-body {
-  padding-top: 8px;
+
+/* 搜索容器样式 */
+.search-container {
+  margin: 16px 0;
+  padding: 20px 24px;
+  background: #f8f9fb;
+  border-radius: 8px;
+  border: none;
 }
-.card-body1 {
-  padding-top: 8px;
+
+/* inline 表单样式 */
+.form-inline {
   display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-.card-body1 >>> .el-table {
-  flex: 1;
-}
-.card-body1 >>> .el-table__body-wrapper {
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: calc(100vh - 320px);
-}
-.search-form {
-  display: flex;
+  align-items: center;
+  gap: 16px;
   flex-wrap: wrap;
 }
+
+.form-inline .el-form-item {
+  margin-bottom: 0;
+}
+
+.form-inline .el-form-item__label {
+  line-height: 40px;
+  padding-right: 12px;
+  color: #303133;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.form-inline .el-input__inner,
+.form-inline .el-select .el-input__inner {
+  height: 40px;
+  border-radius: 6px;
+  border: 1px solid #dcdfe6;
+  transition: all 0.3s;
+}
+
+.form-inline .el-input__inner:focus,
+.form-inline .el-select .el-input__inner:focus {
+  border-color: #409eff;
+}
+
+.form-inline .el-button {
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* 表格容器 */
+.table-wrap {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+}
+
+.project-table {
+  width: 100%;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.project-table >>> .el-table__header {
+  background: #f5f7fa;
+}
+
+.project-table >>> .el-table__header th {
+  background: #f5f7fa;
+  color: #606266;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.project-table >>> .el-table__body td {
+  font-size: 14px;
+  color: #303133;
+}
+
+.project-table >>> .el-table__body tr:hover {
+  background: #f5f7fa;
+}
+
+/* 分页样式 */
+.pagination-wrap {
+  margin-top: 16px;
+  padding: 8px 0;
+  text-align: right;
+}
+
 .mr-1 {
   margin-right: 6px;
 }
-.table-footer {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
+
+/* 详情抽屉样式 */
+.case-detail-drawer {
+  z-index: 3000 !important;
 }
+
+.case-detail-drawer >>> .el-drawer {
+  z-index: 3000;
+}
+
+.case-detail-drawer >>> .el-drawer__header {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e4e7ed;
+}
+
+.case-detail-drawer >>> .el-drawer__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.case-detail-drawer >>> .el-drawer__body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
 .drawer-content {
-  padding-right: 16px;
+  padding: 0;
+  min-height: 200px;
+}
+
+/* 详情描述列表样式 */
+.case-detail-descriptions {
+  width: 100%;
+}
+
+.case-detail-descriptions >>> .el-descriptions__label {
+  width: 120px;
+  font-weight: 600;
+  color: #606266;
+  background-color: #f5f7fa;
+  text-align: right;
+  padding: 12px 16px;
+}
+
+.case-detail-descriptions >>> .el-descriptions__content {
+  padding: 12px 16px;
+  color: #303133;
+}
+
+.detail-text {
+  line-height: 1.8;
+  color: #303133;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.detail-steps {
+  white-space: pre-wrap;
+  line-height: 2;
 }
 </style>

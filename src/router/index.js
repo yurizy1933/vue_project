@@ -12,6 +12,9 @@ import router from '.'
 import projectPrdManagement from '../components/aitest/projectPrdManagement.vue'
 import testCaseManagement from '../components/aitest/testCaseManagement.vue'
 import aiTestCase from '../components/aitest/aitestcase.vue'
+import apiDocManagement from '../components/aitest/apiDocManagement.vue'
+import apiInterfaceManagement from '../components/aitest/apiInterfaceManagement.vue'
+import testDataManagement from '../components/aitest/testDataManagement.vue'
 import projectManagement from '../components/system/projectManagement.vue'
 
 Vue.use(Router)
@@ -71,6 +74,21 @@ export default new Router({
           path: 'projectManagement',
           name: 'projectManagement',
           component: projectManagement
+        },
+        {
+          path: 'apiDocManagement',
+          name: 'apiDocManagement',
+          component: apiDocManagement
+        },
+        {
+          path: 'apiInterfaceManagement',
+          name: 'apiInterfaceManagement',
+          component: apiInterfaceManagement
+        },
+        {
+          path: 'testDataManagement',
+          name: 'testDataManagement',
+          component: testDataManagement
         }
       ]
     }
