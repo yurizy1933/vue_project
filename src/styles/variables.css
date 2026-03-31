@@ -1,0 +1,117 @@
+/* 全局样式变量 - 统一字体大小、间距、颜色 */
+
+/* ===== 字体大小 ===== */
+--font-size-xs: 12px;
+--font-size-sm: 13px;
+--font-size-base: 14px;
+--font-size-md: 15px;
+--font-size-lg: 16px;
+--font-size-xl: 18px;
+--font-size-xxl: 20px;
+
+/* ===== 字体粗细 ===== */
+--font-weight-normal: 400;
+--font-weight-medium: 500;
+--font-weight-semibold: 600;
+--font-weight-bold: 700;
+
+/* ===== 行高 ===== */
+--line-height-tight: 1.4;
+--line-height-base: 1.5;
+--line-height-relaxed: 1.6;
+--line-height-loose: 1.75;
+
+/* ===== 间距 Spacing ===== */
+--spacing-xs: 4px;
+--spacing-sm: 8px;
+--spacing-md: 12px;
+--spacing-lg: 16px;
+--spacing-xl: 20px;
+--spacing-xxl: 24px;
+--spacing-xxxl: 32px;
+
+/* ===== 边框圆角 ===== */
+--radius-sm: 4px;
+--radius-md: 6px;
+--radius-lg: 8px;
+--radius-xl: 12px;
+
+/* ===== 阴影 ===== */
+--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+--shadow-base: 0 2px 8px rgba(0, 0, 0, 0.1);
+--shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+--shadow-xl: 0 6px 20px rgba(0, 0, 0, 0.15);
+
+/* ===== 过渡 ===== */
+--transition-fast: 0.15s;
+--transition-base: 0.2s;
+--transition-slow: 0.3s;
+
+/* ===== z-index ===== */
+--z-dropdown: 1000;
+--z-dialog: 2000;
+--z-notification: 3000;
+--z-tooltip: 4000;
+
+/* ===== 表格相关 ===== */
+--table-header-bg: #f5f7fa;
+--table-hover-bg: #f5f7fa;
+--table-border-color: #ebeef5;
+
+/* ===== 表单相关 ===== */
+--form-input-height: 36px;
+--form-label-color: #606266;
+--form-placeholder-color: #c0c4cc;
+
+/* ===== 按钮 ===== */
+--button-height: 32px;
+--button-height-lg: 40px;
+--button-padding-h: 20px;
+--button-padding-v: 8px;
+
+/* ===== 主色调 ===== */
+--primary-color: #409eff;
+--primary-color-light: #66b1ff;
+--primary-color-dark: #337ecc;
+
+/* 成功 */
+--success-color: #67c23a;
+--success-color-light: #85ce61;
+--success-color-dark: #529b2e;
+
+/* 警告 */
+--warning-color: #e6a23c;
+--warning-color-light: #ebb563;
+--warning-color-dark: #cf9236;
+
+/* 危险 */
+--danger-color: #f56c6c;
+--danger-color-light: #f78989;
+--danger-color-dark: #dd6161;
+
+/* 信息 */
+--info-color: #909399;
+--info-color-light: #a6a9ad;
+--info-color-dark: #7a7b85;
+
+/* ===== 中性色 ===== */
+--text-primary: #303133;
+--text-regular: #606266;
+--text-secondary: #909399;
+--text-placeholder: #c0c4cc;
+
+--border-color: #dcdfe6;
+--border-color-light: #e4e7ed;
+--border-color-dark: #dcdfe6;
+
+--bg-color: #ffffff;
+--bg-color-light: #fafafa;
+--bg-color-secondary: #f5f7fa;
+--bg-color-tertiary: #f0f2f5;
+
+/* ===== Element UI 颜色 ===== */
+--el-color-primary: var(--primary-color);
+--el-color-success: var(--success-color);
+--el-color-warning: var(--warning-color);
+--el-color-danger: var(--danger-color);
+--el-color-info: var(--info-color);

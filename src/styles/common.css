@@ -1,0 +1,240 @@
+/* 全局通用样式 */
+
+/* ===== 清除默认样式 ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--text-primary);
+  background-color: var(--bg-color-light);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 滚动条样式 ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color-light);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color-dark);
+}
+
+/* ===== 文本溢出处理 ===== */
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== Flex 工具类 ===== */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-1 {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ===== 间距工具类 ===== */
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: var(--spacing-sm) !important; }
+.mt-2 { margin-top: var(--spacing-md) !important; }
+.mt-3 { margin-top: var(--spacing-lg) !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: var(--spacing-sm) !important; }
+.mb-2 { margin-bottom: var(--spacing-md) !important; }
+.mb-3 { margin-bottom: var(--spacing-lg) !important; }
+
+.ml-1 { margin-left: var(--spacing-sm) !important; }
+.ml-2 { margin-left: var(--spacing-md) !important; }
+
+.mr-1 { margin-right: var(--spacing-sm) !important; }
+.mr-2 { margin-right: var(--spacing-md) !important; }
+
+.p-1 { padding: var(--spacing-sm) !important; }
+.p-2 { padding: var(--spacing-md) !important; }
+.p-3 { padding: var(--spacing-lg) !important; }
+
+/* ===== 表格统一样式 ===== */
+.table-container {
+  background: var(--bg-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-base);
+  overflow: hidden;
+}
+
+.unified-table {
+  width: 100%;
+  border: none;
+  border-radius: 0;
+}
+
+.unified-table >>> .el-table__header {
+  background: var(--table-header-bg);
+}
+
+.unified-table >>> .el-table__header th {
+  background: var(--table-header-bg);
+  color: var(--text-regular);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  border-bottom: 1px solid var(--table-border-color);
+  padding: var(--spacing-md) 0;
+}
+
+.unified-table >>> .el-table__body td {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  padding: var(--spacing-md) 0;
+}
+
+.unified-table >>> .el-table__body tr:hover {
+  background: var(--table-hover-bg);
+}
+
+/* ===== 表单统一样式 ===== */
+.form-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.form-inline >>> .el-form-item {
+  margin-bottom: 0;
+  margin-right: 0;
+}
+
+.form-inline >>> .el-form-item__label {
+  line-height: var(--button-height);
+  padding-right: var(--spacing-md);
+  color: var(--form-label-color);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  font-size: var(--font-size-base);
+}
+
+.form-inline >>> .el-input__inner,
+.form-inline >>> .el-select .el-input__inner,
+.form-inline >>> .el-input-number__inner {
+  height: var(--button-height);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+  font-size: var(--font-size-base);
+}
+
+.form-inline >>> .el-input__inner:focus,
+.form-inline >>> .el-select .el-input__inner:focus,
+.form-inline >>> .el-input-number__inner:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
+}
+
+.form-inline >>> .el-button {
+  height: var(--button-height);
+  padding: 0 var(--button-padding-h);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+}
+
+/* ===== 搜索框容器 ===== */
+.search-container {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: var(--bg-color-secondary);
+  border-radius: var(--radius-lg);
+  border: none;
+}
+
+/* ===== 卡片样式 ===== */
+.card-container {
+  background: var(--bg-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-base);
+}
+
+.card-body {
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+/* ===== 分页样式 ===== */
+.pagination-wrap {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-sm) 0;
+  text-align: right;
+}
+
+/* ===== 按钮工具类 ===== */
+.btn-group {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* ===== 消息提示 ===== */
+.el-message {
+  z-index: var(--z-notification) !important;
+}
+
+/* ===== 对话框 ===== */
+.el-dialog {
+  border-radius: var(--radius-lg) !important;
+}
+
+/* ===== 抽屉 ===== */
+.el-drawer {
+  border-radius: var(--radius-lg) !important;
+}

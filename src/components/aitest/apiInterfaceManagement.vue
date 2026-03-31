@@ -309,8 +309,8 @@ export default {
 .api-interface-container {
   flex: 1;
   min-width: 0;
-  border-radius: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-base);
 }
 
 .api-interface-container >>> .el-card {
@@ -353,6 +353,7 @@ export default {
 
 .form-inline .el-form-item {
   margin-bottom: 0;
+  margin-right: 0;
 }
 
 .form-inline .el-form-item__label {
@@ -361,6 +362,7 @@ export default {
   color: #303133;
   font-weight: 500;
   white-space: nowrap;
+  font-size: 14px;
 }
 
 .form-inline .el-input__inner,
@@ -369,6 +371,7 @@ export default {
   border-radius: 6px;
   border: 1px solid #dcdfe6;
   transition: all 0.3s;
+  font-size: 14px;
 }
 
 .form-inline .el-input__inner:focus,
@@ -381,10 +384,11 @@ export default {
   padding: 0 24px;
   border-radius: 6px;
   font-weight: 500;
+  font-size: 14px;
 }
 
 .mr-1 {
-  margin-right: 6px;
+  margin-right: 4px;
 }
 
 /* 表格容器 */
@@ -397,6 +401,7 @@ export default {
 /* 统一表格样式 */
 .project-table {
   width: 100%;
+  border: none;
   border-radius: 0;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
@@ -413,11 +418,13 @@ export default {
   font-weight: 600;
   font-size: 14px;
   border-bottom: 1px solid #ebeef5;
+  padding: 16px 0;
 }
 
 .project-table >>> .el-table__body td {
   font-size: 14px;
   color: #303133;
+  padding: 16px 0;
 }
 
 .project-table >>> .el-table__body tr:hover {
@@ -434,15 +441,15 @@ export default {
 /* 测试数据列表样式 */
 .test-data-list {
   width: 100%;
-  border: 1px solid #dcdfe6;
-  border-radius: 6px;
-  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
 }
 
 .test-data-item {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-md);
 }
 
 .test-data-item:last-of-type {
@@ -450,28 +457,33 @@ export default {
 }
 
 .separator {
-  margin: 0 12px;
-  color: #909399;
-  font-weight: 500;
+  margin: 0 var(--spacing-md);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
 }
 
 .remove-btn {
-  margin-left: 8px;
-  color: #f56c6c;
+  margin-left: var(--spacing-sm);
+  color: var(--danger-color);
 }
 
 .remove-btn:hover {
-  color: #f78989;
+  color: var(--danger-color-light);
 }
 
 .add-btn {
   width: 100%;
   border-style: dashed;
+  border-color: var(--border-color);
+}
+
+.add-btn:hover {
+  border-color: var(--primary-color);
 }
 
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--spacing-md);
 }
 </style>

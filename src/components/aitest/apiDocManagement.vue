@@ -441,8 +441,8 @@ export default {
 .api-doc-container {
   flex: 1;
   min-width: 0;
-  border-radius: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-base);
 }
 
 .api-doc-container >>> .el-card {
@@ -485,6 +485,7 @@ export default {
 
 .form-inline .el-form-item {
   margin-bottom: 0;
+  margin-right: 0;
 }
 
 .form-inline .el-form-item__label {
@@ -493,18 +494,22 @@ export default {
   color: #303133;
   font-weight: 500;
   white-space: nowrap;
+  font-size: 14px;
 }
 
 .form-inline .el-input__inner,
-.form-inline .el-select .el-input__inner {
+.form-inline .el-select .el-input__inner,
+.form-inline .el-input-number__inner {
   height: 40px;
   border-radius: 6px;
   border: 1px solid #dcdfe6;
   transition: all 0.3s;
+  font-size: 14px;
 }
 
 .form-inline .el-input__inner:focus,
-.form-inline .el-select .el-input__inner:focus {
+.form-inline .el-select .el-input__inner:focus,
+.form-inline .el-input-number__inner:focus {
   border-color: #409eff;
 }
 
@@ -513,10 +518,11 @@ export default {
   padding: 0 24px;
   border-radius: 6px;
   font-weight: 500;
+  font-size: 14px;
 }
 
 .mr-1 {
-  margin-right: 6px;
+  margin-right: 4px;
 }
 
 /* 表格容器 */
@@ -529,6 +535,7 @@ export default {
 /* 统一表格样式 */
 .project-table {
   width: 100%;
+  border: none;
   border-radius: 0;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
@@ -545,11 +552,13 @@ export default {
   font-weight: 600;
   font-size: 14px;
   border-bottom: 1px solid #ebeef5;
+  padding: 16px 0;
 }
 
 .project-table >>> .el-table__body td {
   font-size: 14px;
   color: #303133;
+  padding: 16px 0;
 }
 
 .project-table >>> .el-table__body tr:hover {
@@ -570,26 +579,26 @@ export default {
 /* 弹窗标题样式 */
 .dialog-title {
   text-align: center;
-  font-weight: bold;
-  font-size: 18px;
-  color: #303133;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
   margin: 0;
   padding: 0;
 }
 
 /* 弹窗直角样式 */
 .top-dialog {
-  z-index: 9999 !important;
+  z-index: var(--z-dialog) !important;
 }
 
 .top-dialog >>> .el-dialog {
-  border-radius: 0 !important;
+  border-radius: var(--radius-lg) !important;
 }
 
 .doc-content {
   min-height: 200px;
   font-family: inherit;
-  background: #ffffff;
+  background: #fff;
   border: none;
   border-radius: 0;
   padding: 0;
@@ -598,42 +607,46 @@ export default {
 /* 接口表格样式 */
 .interface-table {
   width: 100%;
+  border: none;
   border-radius: 0;
   overflow: hidden;
-  font-size: 14px;
+  box-shadow: var(--shadow-base);
+  font-size: var(--font-size-base);
 }
 
 .interface-table >>> .el-table__header {
-  background: #f5f7fa;
+  background: var(--table-header-bg);
 }
 
 .interface-table >>> .el-table__header th {
-  background: #f5f7fa;
-  color: #606266;
-  font-weight: 600;
-  font-size: 14px;
-  border-bottom: 1px solid #ebeef5;
+  background: var(--table-header-bg);
+  color: var(--text-regular);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  border-bottom: 1px solid var(--table-border-color);
+  padding: var(--spacing-md) 0;
 }
 
 .interface-table >>> .el-table__body td {
-  font-size: 14px;
-  color: #303133;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  padding: var(--spacing-md) 0;
 }
 
 .interface-table >>> .el-table__body tr:hover {
-  background: #f5f7fa;
+  background: var(--table-hover-bg);
 }
 
 .doc-empty {
   text-align: center;
-  color: #909399;
-  padding: 60px 20px;
-  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 60px var(--spacing-xl);
+  font-size: var(--font-size-base);
 }
 
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--spacing-md);
 }
 </style>
