@@ -124,7 +124,7 @@ export default {
         params.doc_id = this.$route.query.doc_id
       }
       // 调用后端接口：/api/ai_job/get，并携带搜索参数
-      this.$axios.get('/api/ai_job/get', { params })
+      this.$axios.get('/api/testcase/ai_job/get', { params })
         .then(res => {
           const raw = res && res.data
           // 兼容多种返回结构：数组或 {data: []} 或 {list: []}
