@@ -90,6 +90,9 @@
         <el-form-item label="接口信息">
           <el-input v-model="selectedInterfaceInfo" disabled></el-input>
         </el-form-item>
+        <el-form-item label="测试数据名">
+          <el-input v-model="testDataName" placeholder="请输入测试数据名"></el-input>
+        </el-form-item>
         <el-form-item label="描述">
           <el-input v-model="testDataDescription" type="textarea" :rows="2" placeholder="请输入测试数据描述"></el-input>
         </el-form-item>
@@ -137,6 +140,7 @@ export default {
       testDataDialogVisible: false,
       currentInterface: null,
       testDataList: [],
+      testDataName: '',
       testDataDescription: '',
       selectedInterfaceInfo: '',
       submitting: false
@@ -144,9 +148,8 @@ export default {
   },
   computed: {
     paginatedInterfaces () {
-      const start = (this.currentPage - 1) * this.pageSize
-      const end = start + this.pageSize
-      return this.interfaces.slice(start, end)
+      // 后端分页，直接使用后端返回的数据
+      return this.interfaces
     }
   },
   created () {
@@ -158,7 +161,10 @@ export default {
     },
     fetchInterfaces () {
       this.listLoading = true
-      const params = {}
+      const params = {
+        page: this.currentPage,
+        page_size: this.pageSize
+      }
       if (this.searchForm.api_name) {
         params.api_name = this.searchForm.api_name
       }
@@ -181,6 +187,14 @@ export default {
               : (raw && Array.isArray(raw.list))
                 ? raw.list
                 : []
+          // 从后端响应中获取总数
+          const total = (raw && typeof raw.total === 'number')
+            ? raw.total
+            : (raw && typeof raw.total_count === 'number')
+              ? raw.total_count
+              : (raw && typeof raw.count === 'number')
+                ? raw.count
+                : 0
           this.interfaces = list.map(it => ({
             id: it.id,
             api_name: it.api_name || '',
@@ -192,7 +206,7 @@ export default {
             project_name: it.project_name || '',
             api_doc_name: it.api_doc_name || ''
           }))
-          this.totalInterfaces = this.interfaces.length
+          this.totalInterfaces = total
         })
         .catch(() => {
           this.$message.error('加载接口列表失败')
@@ -242,6 +256,7 @@ export default {
     openTestDataDialog (row) {
       this.currentInterface = row
       this.testDataList = row && row.id ? [] : [{ key: '', value: '' }]
+      this.testDataName = ''
       this.testDataDescription = ''
       if (row) {
         this.selectedInterfaceInfo = `${row.project_name || ''} / ${row.api_doc_name || ''} / ${row.api_name || ''} (${row.method || ''}) ${row.api_path || ''}`
@@ -264,6 +279,11 @@ export default {
         return
       }
 
+      if (!this.testDataName || !this.testDataName.trim()) {
+        this.$message.warning('请输入测试数据名')
+        return
+      }
+
       // 过滤掉空的key-value对
       const validItems = this.testDataList.filter(item => item.key && item.key.trim())
       if (validItems.length === 0) {
@@ -280,6 +300,7 @@ export default {
       this.submitting = true
       this.$axios.post('/api/test_data/create', {
         api_interface_id: this.currentInterface.id,
+        test_data_name: this.testDataName.trim(),
         test_data_json: JSON.stringify(testDataJson),
         description: this.testDataDescription || ''
       })
@@ -297,9 +318,11 @@ export default {
     handleSizeChange (val) {
       this.pageSize = val
       this.currentPage = 1
+      this.fetchInterfaces()
     },
     handleCurrentChange (val) {
       this.currentPage = val
+      this.fetchInterfaces()
     }
   }
 }

@@ -9,8 +9,12 @@
       <!-- 文档搜索栏 -->
       <div class="search-container">
         <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form form-inline">
-          <el-form-item label="项目ID">
-            <el-input v-model="searchForm.project_id" placeholder="请输入项目ID" clearable style="width: 260px"></el-input>
+          <el-form-item label="项目">
+            <el-select v-model="searchForm.project_id" placeholder="请选择项目" clearable style="width: 260px" filterable :loading="searchProjectsLoading" :popper-append-to-body="true">
+              <el-option v-for="(p, idx) in searchProjectOptions" :key="(p.value != null ? p.value : idx) + ''" :label="p.label" :value="p.value">
+                {{ p.label }}
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="文档名称">
             <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 420px"></el-input>
@@ -27,7 +31,7 @@
     <el-dialog :visible.sync="uploadDialogVisible" title="上传接口文档" width="520px" :append-to-body="true" :close-on-click-modal="false">
       <el-form label-width="88px" ref="uploadFormRef">
         <el-form-item label="选择项目">
-          <el-select v-model="uploadForm.project_id" placeholder="请选择项目" style="width: 100%" filterable :loading="projectsLoading" value-key="value" :popper-append-to-body="false">
+          <el-select v-model="uploadForm.project_id" placeholder="请选择项目" style="width: 100%" filterable :loading="projectsLoading" value-key="value" :popper-append-to-body="true">
             <el-option v-for="(p, idx) in projectOptions" :key="(p.value != null ? p.value : idx) + ''" :label="p.label" :value="p.value">
               {{ p.label }}
             </el-option>
@@ -49,7 +53,7 @@
             :on-exceed="onExceed"
             :limit="1"
           >
-            <el-button type="primary">选择 .doc / .docx 文件</el-button>
+            <el-button type="primary">选择 .html 文件</el-button>
             <div slot="tip" class="el-upload__tip">仅支持 .html 文件，最大 10MB</div>
           </el-upload>
         </el-form-item>
@@ -67,9 +71,10 @@
         <el-table-column prop="project_name" label="项目名称" min-width="200"></el-table-column>
         <el-table-column prop="doc_name" label="文档名称" min-width="220" show-overflow-tooltip></el-table-column>
         <el-table-column prop="version" label="版本号" width="120"></el-table-column>
-        <el-table-column label="操作" width="280">
+        <el-table-column label="操作" width="350">
           <template slot-scope="scope">
             <el-button type="text" @click="viewDoc(scope.row)"><i class="fa fa-eye mr-1"></i>查看接口</el-button>
+            <el-button type="text" @click="downloadDoc(scope.row)" :loading="isDownloading(scope.row.id)" :disabled="isDownloading(scope.row.id)"><i class="fa fa-download mr-1"></i>下载</el-button>
             <el-button type="text" @click="parseDoc(scope.row)" :loading="isParsing(scope.row.id)" :disabled="isParsing(scope.row.id)"><i class="fa fa-cogs mr-1"></i>解析</el-button>
             <el-popconfirm title="确定删除该文档吗？" @confirm="deleteDoc(scope.row)" :disabled="isDeleting(scope.row.id)">
               <el-button slot="reference" type="text" :loading="isDeleting(scope.row.id)"><i class="fa fa-trash mr-1"></i>删除</el-button>
@@ -137,6 +142,7 @@ export default {
       listLoading: false,
       deletingIds: [],
       parsingIds: [],
+      downloadingIds: [],
       // 分页相关
       currentPage: 1,
       pageSize: 10,
@@ -150,6 +156,8 @@ export default {
       },
       projectOptions: [],
       projectsLoading: false,
+      searchProjectOptions: [],
+      searchProjectsLoading: false,
       fileList: [],
       submitting: false,
       // 文档详情（接口列表）
@@ -169,6 +177,7 @@ export default {
   created () {
     this.fetchDocs()
     this.fetchProjects()
+    this.loadSearchProjectOptions()
   },
   methods: {
     isDeleting (id) {
@@ -177,16 +186,21 @@ export default {
     isParsing (id) {
       return this.parsingIds.includes(id)
     },
+    isDownloading (id) {
+      return this.downloadingIds.includes(id)
+    },
     fetchDocs () {
       this.listLoading = true
-      const params = {}
+      const params = {
+        doc_type: 'api'
+      }
       if (this.searchForm.project_id) {
         params.project_id = this.searchForm.project_id
       }
       if (this.searchForm.doc_name) {
-        params.doc_name = this.searchForm.doc_name
+        params.file_name = this.searchForm.doc_name
       }
-      this.$axios.get('/api/api_doc/get', { params })
+      this.$axios.get('/api/common/doc/get', { params })
         .then(res => {
           const raw = res && res.data
           const list = Array.isArray(raw)
@@ -199,7 +213,7 @@ export default {
           this.docs = list.map(it => ({
             id: it.id != null ? it.id : it.api_doc_id,
             project_name: it.project_name || it.project || '',
-            doc_name: it.doc_name || it.filename || it.name || '',
+            doc_name: it.file_name || it.filename || it.doc_name || it.name || '',
             version: it.version || ''
           }))
           this.totalDocs = this.docs.length
@@ -289,6 +303,35 @@ export default {
           this.projectsLoading = false
         })
     },
+    loadSearchProjectOptions () {
+      this.searchProjectsLoading = true
+      this.$axios.get('/api/project/get')
+        .then(res => {
+          const raw = res && res.data
+          const list = Array.isArray(raw)
+            ? raw
+            : (raw && Array.isArray(raw.data))
+              ? raw.data
+              : (raw && Array.isArray(raw.list))
+                ? raw.list
+                : []
+          this.searchProjectOptions = Array.isArray(list)
+            ? list.map(it => {
+              const id = it.id != null ? it.id : (it.project_id != null ? it.project_id : it.ID)
+              const name = it.project_name || it.name || `项目${id || ''}`
+              return { value: id, label: name }
+            })
+            : []
+          this.searchProjectOptions = this.searchProjectOptions.filter(it => it && (it.value != null) && it.label)
+        })
+        .catch(() => {
+          this.$message.error('加载项目列表失败')
+          this.searchProjectOptions = []
+        })
+        .finally(() => {
+          this.searchProjectsLoading = false
+        })
+    },
     beforeSelectDoc (file) {
       return false
     },
@@ -326,9 +369,14 @@ export default {
         : this.uploadForm.project_id
       form.append('project_id', pid)
       form.append('version', this.uploadForm.version || '')
+      form.append('doc_type', 'api')
+      // 从文件名中提取文件类型
+      const fileName = this.uploadForm.file.name
+      const fileExt = fileName.substring(fileName.lastIndexOf('.') + 1)
+      form.append('file_type', fileExt)
       form.append('file', this.uploadForm.file)
       this.submitting = true
-      this.$axios.post('/api/api_doc/create', form, { headers: { 'Content-Type': 'multipart/form-data' } })
+      this.$axios.post('/api/common/doc/upload', form, { headers: { 'Content-Type': 'multipart/form-data' } })
         .then(() => {
           this.$message.success('上传成功')
           this.uploadDialogVisible = false
@@ -342,6 +390,31 @@ export default {
         })
         .finally(() => {
           this.submitting = false
+        })
+    },
+    downloadDoc (row) {
+      const docId = row.id
+      const docName = row.doc_name || row.file_name || row.filename || '文档.html'
+      if (!docId) return
+      this.downloadingIds.push(docId)
+      this.$axios.get('/api/common/doc/download', { params: { id: docId }, responseType: 'blob' })
+        .then(res => {
+          const blob = new Blob([res.data])
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = docName
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+          this.$message.success('下载成功')
+        })
+        .catch(() => {
+          this.$message.error('下载失败')
+        })
+        .finally(() => {
+          this.downloadingIds = this.downloadingIds.filter(x => x !== docId)
         })
     },
     viewDoc (row) {
@@ -406,7 +479,7 @@ export default {
       const id = row.id
       if (!id) return
       this.deletingIds.push(id)
-      this.$axios.post('/api/api_doc/delete', { doc_id: id })
+      this.$axios.post('/api/common/doc/delete', { doc_id: id })
         .then(() => {
           this.$message.success('删除成功')
           this.fetchDocs()

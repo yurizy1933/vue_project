@@ -93,6 +93,9 @@
             <el-radio :label="false">接口参数</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="测试数据名">
+          <el-input v-model="editForm.test_data_name" placeholder="请输入测试数据名"></el-input>
+        </el-form-item>
         <el-form-item label="选择接口" v-if="!editForm.is_public">
           <el-select
             v-model="editForm.api_interface_id"
@@ -155,6 +158,7 @@ export default {
       editDialogVisible: false,
       editForm: {
         id: null,
+        test_data_name: '',
         is_public: false,
         api_interface_id: null,
         description: '',
@@ -209,7 +213,8 @@ export default {
             api_name: it.api_name || '',
             api_path: it.api_path || '',
             test_data_json: it.test_data_json || '',
-            description: it.description || ''
+            description: it.description || '',
+            test_data_name: it.test_data_name || ''
           }))
           this.totalData = this.testDataList.length
         })
@@ -273,6 +278,7 @@ export default {
       if (row) {
         // 编辑模式
         this.editForm.id = row.id
+        this.editForm.test_data_name = row.test_data_name || ''
         this.editForm.is_public = row.is_public
         this.editForm.api_interface_id = row.api_interface_id
         this.editForm.description = row.description
@@ -289,6 +295,7 @@ export default {
       } else {
         // 新增模式
         this.editForm.id = null
+        this.editForm.test_data_name = ''
         this.editForm.is_public = false
         this.editForm.api_interface_id = null
         this.editForm.description = ''
@@ -305,6 +312,12 @@ export default {
       }
     },
     submitEdit () {
+      // 验证测试数据名
+      if (!this.editForm.test_data_name || !this.editForm.test_data_name.trim()) {
+        this.$message.warning('请输入测试数据名')
+        return
+      }
+
       // 验证：如果是接口参数，必须选择接口
       if (!this.editForm.is_public && !this.editForm.api_interface_id) {
         this.$message.warning('请选择接口')
@@ -325,6 +338,7 @@ export default {
       })
 
       const params = {
+        test_data_name: this.editForm.test_data_name.trim(),
         test_data_json: JSON.stringify(testDataJson),
         description: this.editForm.description || '',
         is_public: this.editForm.is_public

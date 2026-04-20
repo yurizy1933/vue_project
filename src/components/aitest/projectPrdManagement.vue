@@ -9,8 +9,12 @@
       <!-- 文档搜索栏 -->
       <div class="search-container">
         <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form form-inline">
-          <el-form-item label="项目ID">
-            <el-input v-model="searchForm.project_id" placeholder="请输入项目ID" clearable style="width: 260px"></el-input>
+          <el-form-item label="项目">
+            <el-select v-model="searchForm.project_id" placeholder="请选择项目" clearable style="width: 260px" filterable :loading="searchProjectsLoading" :popper-append-to-body="true">
+              <el-option v-for="(p, idx) in searchProjectOptions" :key="(p.value != null ? p.value : idx) + ''" :label="p.label" :value="p.value">
+                {{ p.label }}
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="文档名称">
             <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 420px"></el-input>
@@ -27,11 +31,14 @@
     <el-dialog :visible.sync="uploadDialogVisible" title="上传项目文档" width="520px" :append-to-body="true" :close-on-click-modal="false">
       <el-form label-width="88px">
         <el-form-item label="选择项目">
-          <el-select v-model="selectedProjectId" placeholder="请选择项目" style="width: 100%" filterable :loading="projectsLoading" value-key="value" :popper-append-to-body="false">
+          <el-select v-model="selectedProjectId" placeholder="请选择项目" style="width: 100%" filterable :loading="projectsLoading" value-key="value" :popper-append-to-body="true">
             <el-option v-for="(p, idx) in projectOptions" :key="(p.value != null ? p.value : idx) + ''" :label="p.label" :value="p.value">
               {{ p.label }}
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="版本名">
+          <el-input v-model="docVersion" placeholder="请输入版本名" clearable style="width: 100%"></el-input>
         </el-form-item>
         <el-form-item label="选择文件">
           <el-upload
@@ -66,9 +73,15 @@
               <span>{{ scope.row.doc_name || scope.row.filename || '—' }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="280">
+          <el-table-column prop="version" label="版本" width="120" show-overflow-tooltip>
+            <template slot-scope="scope">
+              <span>{{ scope.row.version || '—' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="350">
             <template slot-scope="scope">
               <el-button type="text" @click="viewDoc(scope.row)"><i class="fa fa-eye mr-1"></i>查看详情</el-button>
+              <el-button type="text" @click="downloadDoc(scope.row)" :loading="isDownloading(scope.row.id)" :disabled="isDownloading(scope.row.id)"><i class="fa fa-download mr-1"></i>下载</el-button>
               <el-button type="text" @click="generateCases(scope.row)" :loading="isGenerating(scope.row.id)" :disabled="isGenerating(scope.row.id)"><i class="fa fa-magic mr-1"></i>生成用例</el-button>
               <el-popconfirm title="确定删除该文档吗？" @confirm="deleteDoc(scope.row)" :disabled="isDeleting(scope.row.id)">
                 <el-button slot="reference" type="text" :loading="isDeleting(scope.row.id)"><i class="fa fa-trash mr-1"></i>删除</el-button>
@@ -103,6 +116,11 @@
       <div v-if="currentDoc" class="doc-content">
         <div class="doc-body" v-html="formattedDocContent"></div>
       </div>
+      <div v-if="currentDoc && (docHasPrev || docHasNext || docTotalPages > 1)" class="doc-pagination">
+        <el-button size="small" @click="prevDocPage" :disabled="!docHasPrev">上一页</el-button>
+        <span class="page-info">{{ docCurrentPage }} / {{ docTotalPages }} (共{{ docTotalLength }}字)</span>
+        <el-button size="small" @click="nextDocPage" :disabled="!docHasNext">下一页</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -120,6 +138,7 @@ export default {
       listLoading: false,
       deletingIds: [],
       generatingIds: [],
+      downloadingIds: [],
       // 分页相关
       currentPage: 1,
       pageSize: 10,
@@ -131,13 +150,25 @@ export default {
       },
       docDialogVisible: false,
       currentDoc: '',
+      currentDocId: null,
       docTitle: '',
+      // 文档查看分页相关
+      docCurrentPage: 1,
+      docPageSize: 5000, // 每页字符数（后端默认5000）
+      docTotalPages: 0,
+      docTotalLength: 0,
+      docHasNext: false,
+      docHasPrev: false,
       activeProjectId: null,
+      // 搜索用的项目选项
+      searchProjectOptions: [],
+      searchProjectsLoading: false,
       // 新增：上传文档弹窗与数据
       uploadDialogVisible: false,
       projectOptions: [],
       projectsLoading: false,
       selectedProjectId: null,
+      docVersion: '',
       fileList: [],
       submitting: false
     }
@@ -157,19 +188,22 @@ export default {
   created () {
     this.fetchProjects()
     this.fetchDocs()
+    this.loadSearchProjectOptions()
   },
   methods: {
     fetchDocs () {
       this.listLoading = true
       // 构建搜索参数
-      const params = {}
+      const params = {
+        doc_type: 'prd'
+      }
       if (this.searchForm.project_id) {
         params.project_id = this.searchForm.project_id
       }
       if (this.searchForm.doc_name) {
-        params.doc_name = this.searchForm.doc_name
+        params.file_name = this.searchForm.doc_name
       }
-      this.$axios.get('/api/doc/get', { params })
+      this.$axios.get('/api/common/doc/get', { params })
         .then(res => {
           const raw = res && res.data
           const list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.data) ? raw.data : (raw && Array.isArray(raw.list) ? raw.list : []))
@@ -177,7 +211,8 @@ export default {
           this.docs = list.map(it => ({
             id: it.id != null ? it.id : it.doc_id,
             project_name: it.project_name || it.project || '',
-            doc_name: it.doc_name || it.filename || it.name || ''
+            doc_name: it.file_name || it.filename || it.doc_name || it.name || '',
+            version: it.version || ''
           }))
           // 设置总数
           this.totalDocs = this.docs.length
@@ -195,6 +230,9 @@ export default {
     },
     isGenerating (id) {
       return this.generatingIds.includes(id)
+    },
+    isDownloading (id) {
+      return this.downloadingIds.includes(id)
     },
     generateCases (row) {
       const docId = row && (row.id != null ? row.id : row.doc_id)
@@ -219,13 +257,24 @@ export default {
     viewDoc (row) {
       const id = row.id
       if (!id) return
-      this.$axios.get('/api/doc/detail', { params: { id } })
+      this.fetchDocDetail(id, 1, this.docPageSize)
+    },
+    fetchDocDetail (id, page, pageSize) {
+      this.currentDocId = id
+      this.$axios.get('/api/common/doc/detail', { params: { id, page, page_size: pageSize } })
         .then(res => {
           const data = res && res.data && res.data.data
           console.log(data)
           if (data) {
-            this.docTitle = data.filename || ''
-            this.currentDoc = data.file_content || ''
+            this.docTitle = data.file_name || data.filename || ''
+            this.currentDoc = data.page_content || data.file_content || ''
+            // 更新分页信息
+            this.docCurrentPage = data.page || 1
+            this.docPageSize = data.page_size || 5000
+            this.docTotalPages = data.total_pages || 0
+            this.docTotalLength = data.total_length || 0
+            this.docHasNext = data.has_next || false
+            this.docHasPrev = data.has_prev || false
           } else {
             this.docTitle = ''
             this.currentDoc = ''
@@ -240,7 +289,7 @@ export default {
       const docId = row.id
       if (!docId) return
       this.deletingIds.push(docId)
-      this.$axios.post('/api/doc/delete', { doc_id: docId })
+      this.$axios.post('/api/common/doc/delete', { doc_id: docId })
         .then(() => {
           this.$message.success('删除成功')
           this.fetchDocs()
@@ -250,6 +299,31 @@ export default {
         })
         .finally(() => {
           this.deletingIds = this.deletingIds.filter(x => x !== docId)
+        })
+    },
+    downloadDoc (row) {
+      const docId = row.id
+      const docName = row.doc_name || row.file_name || row.filename || '文档.docx'
+      if (!docId) return
+      this.downloadingIds.push(docId)
+      this.$axios.get('/api/common/doc/download', { params: { id: docId }, responseType: 'blob' })
+        .then(res => {
+          const blob = new Blob([res.data])
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = docName
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+          this.$message.success('下载成功')
+        })
+        .catch(() => {
+          this.$message.error('下载失败')
+        })
+        .finally(() => {
+          this.downloadingIds = this.downloadingIds.filter(x => x !== docId)
         })
     },
     handleSearch () {
@@ -282,11 +356,43 @@ export default {
     openUploadDialog () {
       this.uploadDialogVisible = true
       this.selectedProjectId = null
+      this.docVersion = ''
       this.fileList = []
       // 每次打开都刷新一次项目列表，避免下拉为空或数据过期
       this.$nextTick(() => {
         this.loadProjectOptions()
       })
+    },
+    loadSearchProjectOptions () {
+      this.searchProjectsLoading = true
+      this.$axios.get('/api/project/get')
+        .then(res => {
+          const raw = res && res.data
+          let list = []
+          if (Array.isArray(raw)) {
+            list = raw
+          } else if (raw && Array.isArray(raw.data)) {
+            list = raw.data
+          } else if (raw && Array.isArray(raw.list)) {
+            list = raw.list
+          } else {
+            list = []
+          }
+          this.searchProjectOptions = Array.isArray(list)
+            ? list.map(it => {
+              const id = it.id != null ? it.id : (it.project_id != null ? it.project_id : it.ID)
+              const name = it.project_name || it.name || `项目${id || ''}`
+              return { value: id, label: name }
+            })
+            : []
+          this.searchProjectOptions = this.searchProjectOptions.filter(it => it && (it.value != null) && it.label)
+        })
+        .catch(() => {
+          this.$message.error('加载项目列表失败')
+        })
+        .finally(() => {
+          this.searchProjectsLoading = false
+        })
     },
     loadProjectOptions () {
       this.projectsLoading = true
@@ -355,19 +461,33 @@ export default {
         this.$message.warning('请先选择 .doc 文件')
         return
       }
+      if (!this.docVersion) {
+        this.$message.warning('请输入版本名')
+        return
+      }
       const form = new FormData()
       // selectedProjectId 可能是值对象 value
       const pid = typeof this.selectedProjectId === 'object' && this.selectedProjectId !== null ? this.selectedProjectId.value : this.selectedProjectId
       form.append('project_id', pid)
       form.append('file', this.fileList[0].raw)
+      // 添加 doc_type 参数
+      form.append('doc_type', 'prd')
+      // 添加 version 参数
+      form.append('version', this.docVersion)
+      // 从文件名中提取文件类型
+      const fileName = this.fileList[0].raw.name
+      const fileExt = fileName.substring(fileName.lastIndexOf('.') + 1)
+      form.append('file_type', fileExt)
       this.submitting = true
-      this.$axios.post('/api/doc/create', form, { headers: { 'Content-Type': 'multipart/form-data' } })
+      this.$axios.post('/api/common/doc/upload', form, { headers: { 'Content-Type': 'multipart/form-data' } })
         .then(() => {
           this.$message.success('上传成功')
           this.uploadDialogVisible = false
           this.selectedProjectId = null
+          this.docVersion = ''
           this.fileList = []
           this.loadProjectOptions()
+          this.fetchDocs()
         })
         .catch(() => {
           this.$message.error('上传失败')
@@ -411,6 +531,21 @@ export default {
     },
     handleCurrentChange (val) {
       this.currentPage = val
+    },
+    // 文档查看翻页处理方法
+    prevDocPage () {
+      if (this.docHasPrev) {
+        const docId = this.currentDocId
+        const prevPage = this.docCurrentPage - 1
+        this.fetchDocDetail(docId, prevPage, this.docPageSize)
+      }
+    },
+    nextDocPage () {
+      if (this.docHasNext) {
+        const docId = this.currentDocId
+        const nextPage = this.docCurrentPage + 1
+        this.fetchDocDetail(docId, nextPage, this.docPageSize)
+      }
     }
   }
 }
@@ -513,6 +648,21 @@ export default {
   font-size: 15px;
   line-height: 1.75;
   color: #333;
+}
+.doc-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0 0 0;
+  margin-top: 16px;
+  border-top: 1px solid #ebeef5;
+}
+.doc-pagination .page-info {
+  font-size: 14px;
+  color: #606266;
+  min-width: 60px;
+  text-align: center;
 }
 .doc-preview {
   margin-top: 8px;

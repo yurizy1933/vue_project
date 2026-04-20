@@ -31,9 +31,7 @@
             <template #default="scope">
               <el-button type="text" @click="viewCase(scope.row)" :disabled="detailLoading"><i class="fa fa-eye mr-1"></i>查看</el-button>
               <el-button type="text" @click="openEdit(scope.row)"><i class="fa fa-edit mr-1"></i>编辑</el-button>
-              <el-popconfirm title="确定删除该用例吗？" @onConfirm="removeCase(scope.row)" :disabled="isDeleting(scope.row.id)">
-                <el-button slot="reference" type="text" :loading="isDeleting(scope.row.id)"><i class="fa fa-trash mr-1"></i>删除</el-button>
-              </el-popconfirm>
+              <el-button type="text" @click="confirmDelete(scope.row)" :loading="isDeleting(scope.row.id)"><i class="fa fa-trash mr-1"></i>删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -156,10 +154,8 @@ export default {
       deletingIds: [],
       rules: {
         name: [{ required: true, message: '请输入用例名称', trigger: 'blur' }],
-        precondition: [{ required: true, message: '请输入前置条件', trigger: 'blur' }],
         steps: [{ required: true, message: '请输入执行步骤', trigger: 'blur' }],
-        expected: [{ required: true, message: '请输入预期结果', trigger: 'blur' }],
-        level: [{ required: true, message: '请选择用例等级', trigger: 'change' }]
+        expected: [{ required: true, message: '请输入预期结果', trigger: 'blur' }]
       }
     }
   },
@@ -203,7 +199,7 @@ export default {
       this.viewVisible = true
       this.detailLoading = true
       this.currentCase = {}
-      this.$axios.get('/api/testcase/detail', { params: { caseid: row.id } })
+      this.$axios.get('/api/testcase/detail', { params: { id: row.id } })
         .then(res => {
           const raw = res && res.data
           const data = raw && (raw.data || raw.detail || raw)
@@ -247,41 +243,88 @@ export default {
         }
       })
     },
-    submitEdit () {
+    createCase () {
       this.$refs.editFormRef.validate(valid => {
         if (!valid) return
         this.submitLoading = true
-        this.$axios.post('/api/testcase/update', { ...this.editForm })
+        const payload = {
+          title: this.editForm.name,
+          test_steps: this.editForm.steps,
+          expected_result: this.editForm.expected,
+          precondition: this.editForm.precondition,
+          priority: this.editForm.level,
+          status: this.editForm.status
+        }
+        this.$axios.post('/api/testcase/create', payload)
           .then(res => {
-            this.$message.success('保存成功')
+            this.$message.success('创建成功')
             this.editVisible = false
             this.fetchCases()
           })
           .catch(() => {
-            this.$message.error('保存失败')
+            this.$message.error('创建失败')
           })
           .finally(() => {
             this.submitLoading = false
           })
       })
     },
+    updateCase () {
+      this.$refs.editFormRef.validate(valid => {
+        if (!valid) return
+        this.submitLoading = true
+        const payload = {
+          id: this.editForm.id,
+          title: this.editForm.name,
+          test_steps: this.editForm.steps,
+          expected_result: this.editForm.expected,
+          precondition: this.editForm.precondition,
+          priority: this.editForm.level,
+          status: this.editForm.status
+        }
+        this.$axios.post('/api/testcase/update', payload)
+          .then(res => {
+            this.$message.success('更新成功')
+            this.editVisible = false
+            this.fetchCases()
+          })
+          .catch(() => {
+            this.$message.error('更新失败')
+          })
+          .finally(() => {
+            this.submitLoading = false
+          })
+      })
+    },
+    submitEdit () {
+      if (this.editForm.id) {
+        this.updateCase()
+      } else {
+        this.createCase()
+      }
+    },
+    confirmDelete (row) {
+      this.$confirm('确定删除该用例吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.removeCase(row)
+      }).catch(() => {})
+    },
     removeCase (row) {
-      this.$confirm('确定删除该用例吗？', '提示', { type: 'warning' })
+      this.deletingIds.push(row.id)
+      this.$axios.post('/api/testcase/delete', { id: row.id })
         .then(() => {
-          this.deletingIds.push(row.id)
-          this.$axios.post('/api/testcase/delete', { caseid: row.id })
-            .then(() => {
-              this.$message.success('删除成功')
-              this.fetchCases()
-            })
-            .catch(() => {
-              this.$message.error('删除失败')
-            })
-            .finally(() => {
-              this.deletingIds = this.deletingIds.filter(id => id !== row.id)
-            })
+          this.$message.success('删除成功')
+          this.fetchCases()
         })
-        .catch(() => {})
+        .catch(() => {
+          this.$message.error('删除失败')
+        })
+        .finally(() => {
+          this.deletingIds = this.deletingIds.filter(id => id !== row.id)
+        })
     },
     isDeleting (id) {
       return this.deletingIds.includes(id)
