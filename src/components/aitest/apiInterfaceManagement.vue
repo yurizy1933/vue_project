@@ -1,8 +1,8 @@
 <template>
-  <div class="api-interface-container">
+  <div class="api-interface-container unified-container">
     <el-card>
-      <div class="action-bar">
-        <h3 class="card-title">接口管理</h3>
+      <div class="action-bar unified-action-bar">
+        <h3 class="card-title unified-card-title">接口管理</h3>
         <div style="flex:1"></div>
         <el-button type="primary" @click="openTestDataDialog(null)">
           <i class="fa fa-plus mr-1"></i>新增测试数据
@@ -10,8 +10,8 @@
       </div>
 
       <!-- 接口搜索栏 -->
-      <div class="search-container">
-        <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form form-inline">
+      <div class="search-container unified-search-container">
+        <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form unified-form-inline">
           <el-form-item label="API名称">
             <el-input v-model="searchForm.api_name" placeholder="请输入API名称" clearable style="width: 200px"></el-input>
           </el-form-item>
@@ -33,8 +33,8 @@
     </el-card>
 
     <!-- 接口列表 -->
-    <div class="table-wrap">
-      <el-table :data="paginatedInterfaces" stripe v-loading="listLoading" class="project-table" style="width: 100%">
+    <div class="table-wrap unified-table-wrap">
+      <el-table :data="paginatedInterfaces" stripe v-loading="listLoading" class="project-table unified-table" style="width: 100%">
         <el-table-column prop="id" label="ID" width="60"></el-table-column>
         <el-table-column prop="project_name" label="项目名称" min-width="120" show-overflow-tooltip></el-table-column>
         <el-table-column prop="api_doc_name" label="接口文档" min-width="150" show-overflow-tooltip></el-table-column>
@@ -66,7 +66,7 @@
         </el-table-column>
       </el-table>
       <!-- 分页组件 -->
-      <div class="pagination-wrap">
+      <div class="pagination-wrap unified-pagination-wrap">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -330,138 +330,14 @@ export default {
 
 <style scoped>
 .api-interface-container {
-  flex: 1;
-  min-width: 0;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-base);
-}
-
-.api-interface-container >>> .el-card {
-  margin-bottom: 0;
-}
-
-.api-interface-container >>> .el-card__body {
-  padding: 16px 20px;
-}
-
-.action-bar {
-  margin: 16px 0 0 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.card-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #303133;
-}
-
-/* 搜索容器样式 */
-.search-container {
-  padding: 20px 24px;
-  background: #f8f9fb;
-  border-radius: 8px;
-  border: none;
-}
-
-/* inline 表单样式 */
-.form-inline {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.form-inline .el-form-item {
-  margin-bottom: 0;
-  margin-right: 0;
-}
-
-.form-inline .el-form-item__label {
-  line-height: 40px;
-  padding-right: 12px;
-  color: #303133;
-  font-weight: 500;
-  white-space: nowrap;
-  font-size: 14px;
-}
-
-.form-inline .el-input__inner,
-.form-inline .el-select .el-input__inner {
-  height: 40px;
-  border-radius: 6px;
-  border: 1px solid #dcdfe6;
-  transition: all 0.3s;
-  font-size: 14px;
-}
-
-.form-inline .el-input__inner:focus,
-.form-inline .el-select .el-input__inner:focus {
-  border-color: #409eff;
-}
-
-.form-inline .el-button {
-  height: 40px;
-  padding: 0 24px;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 14px;
+  /* 使用 unified-container 类，保留必要的特殊样式 */
 }
 
 .mr-1 {
   margin-right: 4px;
 }
 
-/* 表格容器 */
-.table-wrap {
-  display: flex;
-  flex-direction: column;
-  margin-top: 16px;
-}
-
-/* 统一表格样式 */
-.project-table {
-  width: 100%;
-  border: none;
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-}
-
-.project-table >>> .el-table__header {
-  background: #f5f7fa;
-}
-
-.project-table >>> .el-table__header th {
-  background: #f5f7fa;
-  color: #606266;
-  font-weight: 600;
-  font-size: 14px;
-  border-bottom: 1px solid #ebeef5;
-  padding: 16px 0;
-}
-
-.project-table >>> .el-table__body td {
-  font-size: 14px;
-  color: #303133;
-  padding: 16px 0;
-}
-
-.project-table >>> .el-table__body tr:hover {
-  background: #f5f7fa;
-}
-
-/* 分页样式 */
-.pagination-wrap {
-  margin-top: 16px;
-  padding: 8px 0;
-  text-align: right;
-}
-
-/* 测试数据列表样式 */
+/* Test data list styles */
 .test-data-list {
   width: 100%;
   border: 1px solid var(--border-color);

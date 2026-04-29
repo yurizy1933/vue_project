@@ -177,7 +177,7 @@ export default {
 }
 
 .header {
-  background: linear-gradient(135deg, #9bb1de 0%, #9fe27f 100%);
+  background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%);
   border-bottom: 1px solid rgba(255,255,255,0.15);
   display: flex;
   justify-content: space-between;
@@ -185,7 +185,7 @@ export default {
   padding: 0 var(--spacing-xl);
   height: 56px;
   color: #fff;
-  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   position: relative;
   z-index: 200;
 }
@@ -288,7 +288,7 @@ export default {
   background: transparent;
 }
 
-/* 一级菜单样式 */
+/* First level menu styles */
 .el-menu-vertical-demo > .el-menu-item,
 .el-menu-vertical-demo > .el-submenu > .el-submenu__title {
   border-radius: 8px !important;
@@ -315,7 +315,7 @@ export default {
   letter-spacing: 0.3px;
 }
 
-/* 图标位置调整 */
+/* Icon position adjustment */
 .el-menu-vertical-demo > .el-menu-item i,
 .el-menu-vertical-demo > .el-submenu > .el-submenu__title i {
   margin-right: auto;
@@ -339,13 +339,13 @@ export default {
 .el-menu-vertical-demo > .el-submenu > .el-submenu__title:hover i {
   opacity: 1;
   transform: scale(1.1);
-  color: #9bb1de;
+  color: var(--gradient-primary-start);
 }
 
 .el-menu-vertical-demo > .el-menu-item.is-active {
-  background: linear-gradient(135deg, #9bb1de 0%, #9fe27f 100%) !important;
+  background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%) !important;
   color: #fff !important;
-  box-shadow: 0 4px 14px rgba(13, 110, 253, 0.45) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   border-color: #0a58ca !important;
   transform: translateX(-5px);
   font-weight: 700 !important;
@@ -358,7 +358,7 @@ export default {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* 二级菜单包裹 */
+/* Second level menu wrapper */
 .el-menu-vertical-demo .el-submenu .el-menu {
   background: #f8f9fa !important;
   border-radius: 8px;
@@ -369,7 +369,7 @@ export default {
   position: relative;
 }
 
-/* 二级菜单前分隔线 */
+/* Second level menu front divider */
 .el-menu-vertical-demo .el-submenu .el-menu::before {
   content: '';
   position: absolute;
@@ -381,7 +381,7 @@ export default {
   border-radius: 0 2px 2px 0;
 }
 
-/* 二级菜单项 */
+/* Second level menu items */
 .el-menu-vertical-demo .el-submenu .el-menu-item {
   position: relative;
   margin-left: 0 !important;
@@ -401,7 +401,7 @@ export default {
   line-height: 38px;
 }
 
-/* 二级菜单图标位置调整 */
+/* Second level menu icon position adjustment */
 .el-menu-vertical-demo .el-submenu .el-menu-item i {
   margin-right: auto;
   margin-left: 0;
@@ -412,7 +412,7 @@ export default {
   transition: all 0.2s;
 }
 
-/* 二级菜单悬停效果 */
+/* Second level menu hover effect */
 .el-menu-vertical-demo .el-submenu .el-menu-item:hover {
   background: rgba(13, 110, 253, 0.08) !important;
   border-color: rgba(13, 110, 253, 0.15) !important;
@@ -420,18 +420,18 @@ export default {
 }
 
 .el-menu-vertical-demo .el-submenu .el-menu-item:hover i {
-  color: #9bb1de;
+  color: var(--gradient-primary-start);
   transform: scale(1.1);
 }
 
-/* 二级菜单激活状态 */
+/* Second level menu active state */
 .el-menu-vertical-demo .el-submenu .el-menu-item.is-active {
-  background: rgba(13, 110, 253, 0.12) !important;
-  color: #9bb1de !important;
+  background: rgba(64, 158, 255, 0.1) !important;
+  color: var(--primary-color) !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.2) !important;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.15) !important;
   transform: translateX(-3px);
-  border-color: rgba(13, 110, 253, 0.25) !important;
+  border-color: rgba(64, 158, 255, 0.25) !important;
 }
 
 .el-menu-vertical-demo .el-submenu .el-menu-item.is-active i {
@@ -471,25 +471,25 @@ export default {
   opacity: 1;
 }
 
-/* 一级菜单激活时，二级菜单背景 */
+/* Second level menu background when first level menu is active */
 .el-menu-vertical-demo > .el-submenu.is-opened > .el-menu {
   background: #f8f9fa !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* 展开的菜单标题样式 */
+/* Expanded menu title styles */
 .el-menu-vertical-demo > .el-submenu.is-opened > .el-submenu__title {
   background: rgba(13, 110, 253, 0.1) !important;
   border-color: #c5cbe6 !important;
 }
 
 .el-menu-vertical-demo > .el-submenu.is-opened > .el-submenu__title i {
-  color: #9bb1de;
+  color: var(--gradient-primary-start);
   transform: scale(1.1);
   opacity: 1;
 }
 
-/* 子菜单展开指示器 */
+/* Submenu expansion indicator */
 .el-menu-vertical-demo .el-submenu__icon-arrow {
   transition: transform var(--transition-base) !important;
   font-size: 12px !important;
@@ -499,10 +499,10 @@ export default {
 
 .el-menu-vertical-demo .el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
   transform: rotate(-90deg) !important;
-  color: #9bb1de;
+  color: var(--gradient-primary-start);
 }
 
-/* 菜单项分隔效果 */
+/* Menu item separator effect */
 .el-menu-vertical-demo > .el-submenu:not(:last-child) .el-menu {
   margin-bottom: 8px;
 }
@@ -549,7 +549,7 @@ export default {
   opacity: 1;
 }
 
-/* 面包屑与标题之间的分隔线 */
+/* Divider between breadcrumb and title */
 .breadcrumb-divider {
   width: 100%;
   height: 1px;
@@ -557,7 +557,7 @@ export default {
   margin: 16px 0;
 }
 
-/* 菜单栏下方的浅灰色分隔线 */
+/* Light gray separator below menu bar */
 .menu-bottom-separator {
   width: 100%;
   height: 1px;
@@ -592,7 +592,7 @@ export default {
   overflow: hidden;
 }
 
-/* 内容区域顶部分隔线 */
+/* Content area top separator */
 .content-body::before {
   content: '';
   position: absolute;
@@ -614,7 +614,7 @@ export default {
   flex: 1;
 }
 
-/* 面包屑图标样式 */
+/* Breadcrumb icon styles */
 .breadcrumb-icon {
   margin-right: 6px;
   font-size: 12px;
@@ -622,7 +622,7 @@ export default {
   transition: transform 0.2s;
 }
 
-/* 面包屑项样式 */
+/* Breadcrumb item styles */
 .el-breadcrumb__item .el-breadcrumb__inner {
   color: #6c757d !important;
   font-weight: 400;
@@ -634,7 +634,7 @@ export default {
   align-items: center;
 }
 
-/* 面包屑可点击项悬停效果 */
+/* Breadcrumb clickable item hover effect */
 .el-breadcrumb__item:not(:last-child) .el-breadcrumb__inner:hover {
   color: #9bb1de !important;
   background: rgba(13, 110, 253, 0.08);
@@ -643,18 +643,18 @@ export default {
 }
 
 .el-breadcrumb__item:not(:last-child) .el-breadcrumb__inner:hover .breadcrumb-icon {
-  color: #9bb1de;
+  color: var(--gradient-primary-start);
   transform: scale(1.15);
 }
 
-/* 面包屑分隔符样式 */
+/* Breadcrumb separator styles */
 .el-breadcrumb__separator {
   color: #adb5bd !important;
   font-size: 11px;
   margin: 0 8px !important;
 }
 
-/* 面包屑最后一项（当前页面）样式 */
+/* Breadcrumb last item (current page) styles */
 .el-breadcrumb__item:last-child .el-breadcrumb__inner {
   color: #9bb1de !important;
   font-weight: 600;
@@ -664,7 +664,7 @@ export default {
 }
 
 .el-breadcrumb__item:last-child .el-breadcrumb__inner .breadcrumb-icon {
-  color: #9bb1de;
+  color: var(--gradient-primary-start);
   font-size: 13px;
 }
 
@@ -688,20 +688,36 @@ export default {
   font-weight: 500;
 }
 
-/* 响应式调整 */
-@media (max-width: 900px) {
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 var(--spacing-md);
+  }
+
   .main-content {
     flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
   }
+
   .sidebar {
-    border-radius: 0;
+    border-radius: var(--radius-md);
     box-shadow: none;
     padding: 0;
     min-width: 100%;
     max-width: 100%;
   }
+
   .content {
     padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .content-header {
+    padding: var(--spacing-md);
+  }
+
+  .search-container {
+    padding: var(--spacing-lg);
   }
 }
 </style>

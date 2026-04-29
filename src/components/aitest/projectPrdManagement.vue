@@ -1,14 +1,14 @@
 <template>
-  <div class="project-main-content">
+  <div class="project-main-content unified-container">
     <el-card>
-      <div class="action-bar">
-        <h3 class="card-title">需求文档</h3>
+      <div class="action-bar unified-action-bar">
+        <h3 class="card-title unified-card-title">需求文档</h3>
         <div style="flex:1"></div>
         <el-button type="primary" @click="openUploadDialog">上传文档</el-button>
       </div>
       <!-- 文档搜索栏 -->
-      <div class="search-container">
-        <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form form-inline">
+      <div class="search-container unified-search-container">
+        <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form unified-form-inline">
           <el-form-item label="项目">
             <el-select v-model="searchForm.project_id" placeholder="请选择项目" clearable style="width: 260px" filterable :loading="searchProjectsLoading" :popper-append-to-body="true">
               <el-option v-for="(p, idx) in searchProjectOptions" :key="(p.value != null ? p.value : idx) + ''" :label="p.label" :value="p.value">
@@ -64,8 +64,8 @@
       </span>
     </el-dialog>
       <!-- 文档列表 -->
-      <div class="table-wrap">
-        <el-table :data="paginatedDocs" style="width: 100%;" class="project-table" v-loading="listLoading">
+      <div class="table-wrap unified-table-wrap">
+        <el-table :data="paginatedDocs" style="width: 100%;" class="project-table unified-table" v-loading="listLoading">
           <el-table-column prop="id" label="ID" width="100"></el-table-column>
           <el-table-column prop="project_name" label="项目名称" min-width="200"></el-table-column>
           <el-table-column prop="doc_name" label="需求文档" min-width="300" show-overflow-tooltip>
@@ -90,7 +90,7 @@
           </el-table-column>
         </el-table>
         <!-- 分页组件 -->
-        <div class="pagination-wrap">
+        <div class="pagination-wrap unified-pagination-wrap">
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -553,77 +553,7 @@ export default {
 
 <style scoped>
 .project-main-content {
-  flex: 1;
-  min-width: 0;
-  border-radius: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-}
-
-.project-main-content >>> .el-card {
-  margin-bottom: 0;
-}
-
-.project-main-content >>> .el-card__body {
-  padding: 16px 20px;
-}
-
-.action-bar {
-  margin: 16px 0 0 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.search-container {
-  padding: 20px 24px;
-  background: #f8f9fb;
-  border-radius: 8px;
-  border: none;
-}
-
-/* inline 表单样式 */
-.form-inline {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.form-inline .el-form-item {
-  margin-bottom: 0;
-}
-
-.form-inline .el-form-item__label {
-  line-height: 40px;
-  padding-right: 12px;
-  color: #303133;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.form-inline .el-input__inner,
-.form-inline .el-select .el-input__inner {
-  height: 40px;
-  border-radius: 6px;
-  border: 1px solid #dcdfe6;
-  transition: all 0.3s;
-}
-
-.form-inline .el-input__inner:focus,
-.form-inline .el-select .el-input__inner:focus {
-  border-color: #409eff;
-}
-
-.form-inline .el-button {
-  height: 40px;
-  padding: 0 24px;
-  border-radius: 6px;
-  font-weight: 500;
-}
-.card-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #303133;
+  /* 使用 unified-container 类，保留必要的特殊样式 */
 }
 .row-highlight {
   animation: highlightRow 1.2s;
@@ -681,45 +611,11 @@ export default {
 .content-body:hover {
   box-shadow: 0 8px 32px rgba(33,150,243,0.16);
 }
+/* Table wrap */
 .table-wrap {
   display: flex;
   flex-direction: column;
-  margin-top: 16px;
-}
-
-.project-table {
-  width: 100%;
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-}
-
-.project-table >>> .el-table__header {
-  background: #f5f7fa;
-}
-
-.project-table >>> .el-table__header th {
-  background: #f5f7fa;
-  color: #606266;
-  font-weight: 600;
-  font-size: 14px;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.project-table >>> .el-table__body td {
-  font-size: 14px;
-  color: #303133;
-}
-
-.project-table >>> .el-table__body tr:hover {
-  background: #f5f7fa;
-}
-
-.pagination-wrap {
-  margin-top: 16px;
-  padding: 8px 0;
-  text-align: right;
+  margin-top: var(--spacing-lg);
 }
 .cell-content {
   word-break: break-word;
@@ -786,7 +682,7 @@ export default {
   width: 100%;
 }
 
-/* 弹窗标题样式 */
+/* Dialog title styles */
 .dialog-title {
   text-align: center;
   font-weight: bold;
@@ -796,11 +692,11 @@ export default {
   padding: 0;
 }
 
-/* 确保弹窗在遮罩层之上 */
+/* Ensure dialog is above mask */
 .top-dialog {
   z-index: 9999 !important;
 }
-/* 弹窗直角样式 */
+/* Dialog square corner styles */
 .top-dialog >>> .el-dialog {
   border-radius: 0 !important;
 }
@@ -813,7 +709,7 @@ export default {
   z-index: 9998 !important;
 }
 
-/* 强制弹窗内容显示 */
+/* Force dialog content display */
 .top-dialog .el-dialog {
   z-index: 10000 !important;
   position: relative !important;
@@ -824,7 +720,7 @@ export default {
   position: relative !important;
 }
 
-/* 防止弹窗导致页面变宽 */
+/* Prevent dialog from causing page width increase */
 body {
   overflow-y: scroll !important;
 }
@@ -835,7 +731,7 @@ body {
 </style>
 
 <style>
-/* 全局样式：弹窗直角（因为弹窗是 append-to-body） */
+/* Global style: dialog square corner (because dialog is append-to-body) */
 .top-dialog .el-dialog {
   border-radius: 0 !important;
 }

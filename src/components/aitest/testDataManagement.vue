@@ -1,8 +1,8 @@
 <template>
-  <div class="test-data-container">
+  <div class="test-data-container unified-container">
     <el-card>
-      <div class="action-bar">
-        <h3 class="card-title">测试数据管理</h3>
+      <div class="action-bar unified-action-bar">
+        <h3 class="card-title unified-card-title">测试数据管理</h3>
         <div style="flex:1"></div>
         <el-button type="primary" @click="openEditDialog()">
           <i class="fa fa-plus mr-1"></i>新增测试数据
@@ -10,8 +10,8 @@
       </div>
 
       <!-- 搜索栏 -->
-      <div class="search-container">
-        <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form form-inline">
+      <div class="search-container unified-search-container">
+        <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form unified-form-inline">
           <el-form-item label="数据类型">
             <el-select v-model="searchForm.is_public" placeholder="请选择类型" clearable style="width: 150px">
               <el-option label="全部" :value="null"></el-option>
@@ -34,8 +34,8 @@
     </el-card>
 
     <!-- 测试数据列表 -->
-    <div class="table-wrap">
-      <el-table :data="paginatedData" stripe v-loading="listLoading" class="project-table" style="width: 100%">
+    <div class="table-wrap unified-table-wrap">
+      <el-table :data="paginatedData" stripe v-loading="listLoading" class="project-table unified-table" style="width: 100%">
         <el-table-column prop="id" label="ID" width="60"></el-table-column>
         <el-table-column prop="is_public" label="数据类型" width="100">
           <template slot-scope="scope">
@@ -66,7 +66,7 @@
         </el-table-column>
       </el-table>
       <!-- 分页组件 -->
-      <div class="pagination-wrap">
+      <div class="pagination-wrap unified-pagination-wrap">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -399,124 +399,14 @@ export default {
 
 <style scoped>
 .test-data-container {
-  flex: 1;
-  min-width: 0;
-  border-radius: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-}
-
-.test-data-container >>> .el-card {
-  margin-bottom: 0;
-}
-
-.test-data-container >>> .el-card__body {
-  padding: 16px 20px;
-}
-
-.action-bar {
-  margin: 16px 0 0 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.card-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #303133;
-}
-
-/* 搜索容器样式 */
-.search-container {
-  padding: 20px 24px;
-  background: #f8f9fb;
-  border-radius: 8px;
-  border: none;
-}
-
-/* inline 表单样式 */
-.form-inline {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.form-inline .el-form-item {
-  margin-bottom: 0;
-}
-
-.form-inline .el-form-item__label {
-  line-height: 40px;
-  padding-right: 12px;
-  color: #303133;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.form-inline .el-input__inner,
-.form-inline .el-select .el-input__inner {
-  height: 40px;
-  border-radius: 6px;
-  border: 1px solid #dcdfe6;
-  transition: all 0.3s;
-}
-
-.form-inline .el-input__inner:focus,
-.form-inline .el-select .el-input__inner:focus {
-  border-color: #409eff;
-}
-
-.form-inline .el-button {
-  height: 40px;
-  padding: 0 24px;
-  border-radius: 6px;
-  font-weight: 500;
+  /* 使用 unified-container 类，保留必要的特殊样式 */
 }
 
 .mr-1 {
   margin-right: 6px;
 }
 
-/* 表格容器 */
-.table-wrap {
-  display: flex;
-  flex-direction: column;
-  margin-top: 16px;
-}
-
-/* 统一表格样式 */
-.project-table {
-  width: 100%;
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-}
-
-.project-table >>> .el-table__header {
-  background: #f5f7fa;
-}
-
-.project-table >>> .el-table__header th {
-  background: #f5f7fa;
-  color: #606266;
-  font-weight: 600;
-  font-size: 14px;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.project-table >>> .el-table__body td {
-  font-size: 14px;
-  color: #303133;
-}
-
-.project-table >>> .el-table__body tr:hover {
-  background: #f5f7fa;
-}
-
-/* 测试数据预览样式 */
+/* Test data preview styles */
 .test-data-preview {
   color: #606266;
   font-family: 'Courier New', monospace;
@@ -524,14 +414,7 @@ export default {
   line-height: 1.6;
 }
 
-/* 分页样式 */
-.pagination-wrap {
-  margin-top: 16px;
-  padding: 8px 0;
-  text-align: right;
-}
-
-/* 测试数据列表样式 */
+/* Test data list styles */
 .test-data-list {
   width: 100%;
   border: 1px solid #dcdfe6;

@@ -1,11 +1,11 @@
 <template>
   <div class="aitestcase-container">
     <el-card>
-      <div class="action-bar">
-        <h3 class="card-title">AI 测试用例文档</h3>
+      <div class="action-bar unified-action-bar">
+        <h3 class="card-title unified-card-title">AI 测试用例文档</h3>
       </div>
-      <div class="search-container">
-        <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form form-inline">
+      <div class="search-container unified-search-container">
+        <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form unified-form-inline">
           <el-form-item label="项目名称">
             <el-input v-model="searchForm.project_id" placeholder="请输入项目名称" clearable style="width: 260px"></el-input>
           </el-form-item>
@@ -20,8 +20,8 @@
       </div>
     </el-card>
 
-    <div class="table-wrap">
-        <el-table :data="docs" stripe v-loading="listLoading" class="project-table" style="width: 100%">
+    <div class="table-wrap unified-table-wrap">
+        <el-table :data="docs" stripe v-loading="listLoading" class="project-table unified-table" style="width: 100%">
           <el-table-column type="index" width="60" label="#" />
           <el-table-column prop="project_name" label="项目名称" min-width="220" />
           <el-table-column prop="doc_name" label="需求文档" min-width="320" show-overflow-tooltip />
@@ -44,7 +44,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="pagination-wrap">
+        <div class="pagination-wrap unified-pagination-wrap">
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -229,8 +229,8 @@ export default {
 .aitestcase-container {
   flex: 1;
   min-width: 0;
-  border-radius: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-base);
 }
 
 .aitestcase-container >>> .el-card {
@@ -247,115 +247,7 @@ export default {
   justify-content: space-between;
 }
 
-.action-bar {
-  margin: 16px 0 0 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.card-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #303133;
-}
-
-/* 搜索容器样式 */
-.search-container {
-  padding: 20px 24px;
-  background: #f8f9fb;
-  border-radius: 8px;
-  border: none;
-}
-
-/* inline 表单样式 */
-.search-form.form-inline {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.search-form.form-inline >>> .el-form-item {
-  margin-bottom: 0;
-  margin-right: 0;
-  flex-shrink: 0;
-}
-
-.search-form.form-inline >>> .el-form-item__label {
-  line-height: 40px;
-  padding-right: 12px;
-  color: #303133;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.search-form.form-inline >>> .el-input__inner,
-.search-form.form-inline >>> .el-select .el-input__inner {
-  height: 40px;
-  border-radius: 6px;
-  border: 1px solid #dcdfe6;
-  transition: all 0.3s;
-}
-
-.search-form.form-inline >>> .el-input__inner:focus,
-.search-form.form-inline >>> .el-select .el-input__inner:focus {
-  border-color: #409eff;
-}
-
-.search-form.form-inline >>> .el-button {
-  height: 40px;
-  padding: 0 24px;
-  border-radius: 6px;
-  font-weight: 500;
-}
-
 .mr-1 {
   margin-right: 6px;
-}
-
-/* 表格容器 */
-.table-wrap {
-  display: flex;
-  flex-direction: column;
-  margin-top: 16px;
-}
-
-/* 统一表格样式 */
-.project-table {
-  width: 100%;
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-}
-
-.project-table >>> .el-table__header {
-  background: #f5f7fa;
-}
-
-.project-table >>> .el-table__header th {
-  background: #f5f7fa;
-  color: #606266;
-  font-weight: 600;
-  font-size: 14px;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.project-table >>> .el-table__body td {
-  font-size: 14px;
-  color: #303133;
-}
-
-.project-table >>> .el-table__body tr:hover {
-  background: #f5f7fa;
-}
-
-/* 分页样式 */
-.pagination-wrap {
-  margin-top: 16px;
-  padding: 8px 0;
-  text-align: right;
 }
 </style>

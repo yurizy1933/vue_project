@@ -1,6 +1,6 @@
-/* 全局通用样式 */
+/* Global common styles */
 
-/* ===== 清除默认样式 ===== */
+/* ===== Reset default styles ===== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -17,7 +17,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ===== 滚动条样式 ===== */
+/* ===== Scrollbar styles ===== */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -37,7 +37,7 @@ body {
   background: var(--border-color-dark);
 }
 
-/* ===== 文本溢出处理 ===== */
+/* ===== Text overflow handling ===== */
 .text-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -60,7 +60,7 @@ body {
   text-overflow: ellipsis;
 }
 
-/* ===== Flex 工具类 ===== */
+/* ===== Flex utilities ===== */
 .flex {
   display: flex;
 }
@@ -87,7 +87,7 @@ body {
   min-width: 0;
 }
 
-/* ===== 间距工具类 ===== */
+/* ===== Spacing utilities ===== */
 .mt-0 { margin-top: 0 !important; }
 .mt-1 { margin-top: var(--spacing-sm) !important; }
 .mt-2 { margin-top: var(--spacing-md) !important; }
@@ -108,7 +108,7 @@ body {
 .p-2 { padding: var(--spacing-md) !important; }
 .p-3 { padding: var(--spacing-lg) !important; }
 
-/* ===== 表格统一样式 ===== */
+/* ===== Table unified styles ===== */
 .table-container {
   background: var(--bg-color);
   border-radius: var(--radius-lg);
@@ -132,24 +132,24 @@ body {
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
   border-bottom: 1px solid var(--table-border-color);
-  padding: var(--spacing-md) 0;
+  padding: var(--spacing-lg) 0;
 }
 
 .unified-table >>> .el-table__body td {
   font-size: var(--font-size-base);
   color: var(--text-primary);
-  padding: var(--spacing-md) 0;
+  padding: var(--spacing-lg) 0;
 }
 
 .unified-table >>> .el-table__body tr:hover {
   background: var(--table-hover-bg);
 }
 
-/* ===== 表单统一样式 ===== */
+/* ===== Form unified styles ===== */
 .form-inline {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   flex-wrap: wrap;
 }
 
@@ -192,15 +192,15 @@ body {
   font-size: var(--font-size-base);
 }
 
-/* ===== 搜索框容器 ===== */
+/* ===== Search container ===== */
 .search-container {
-  padding: var(--spacing-lg) var(--spacing-xl);
+  padding: var(--spacing-xl) var(--spacing-xxl);
   background: var(--bg-color-secondary);
   border-radius: var(--radius-lg);
   border: none;
 }
 
-/* ===== 卡片样式 ===== */
+/* ===== Card styles ===== */
 .card-container {
   background: var(--bg-color);
   border-radius: var(--radius-lg);
@@ -208,33 +208,143 @@ body {
 }
 
 .card-body {
-  padding: var(--spacing-lg) var(--spacing-xl);
+  padding: var(--spacing-xl) var(--spacing-xxl);
 }
 
-/* ===== 分页样式 ===== */
+/* ===== Pagination styles ===== */
 .pagination-wrap {
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
   padding: var(--spacing-sm) 0;
   text-align: right;
 }
 
-/* ===== 按钮工具类 ===== */
+/* ===== Button utilities ===== */
 .btn-group {
   display: flex;
   gap: var(--spacing-sm);
 }
 
-/* ===== 消息提示 ===== */
+/* ===== Message notifications ===== */
 .el-message {
   z-index: var(--z-notification) !important;
 }
 
-/* ===== 对话框 ===== */
+/* ===== Dialog ===== */
 .el-dialog {
   border-radius: var(--radius-lg) !important;
 }
 
-/* ===== 抽屉 ===== */
+/* ===== Drawer ===== */
 .el-drawer {
   border-radius: var(--radius-lg) !important;
+}
+
+/* ===== Card unified styles ===== */
+.unified-card-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.unified-action-bar {
+  margin: var(--spacing-lg) 0 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+/* ===== Container unified styles ===== */
+.unified-container {
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-base);
+}
+
+.unified-container >>> .el-card {
+  margin-bottom: 0;
+}
+
+.unified-container >>> .el-card__body {
+  padding: 16px 20px;
+}
+
+/* ===== Search container unified styles ===== */
+.unified-search-container {
+  padding: var(--spacing-xl) var(--spacing-xxl);
+  background: var(--bg-color-light);
+  border-radius: var(--radius-lg);
+  border: none;
+}
+
+/* ===== Table wrap unified styles ===== */
+.unified-table-wrap {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--spacing-lg);
+}
+
+/* ===== Table unified styles (扩展现有) ===== */
+.unified-table >>> .el-table__body tr {
+  transition: background-color var(--transition-base);
+}
+
+.unified-table >>> .el-table__body tr:hover {
+  background: var(--bg-color-secondary);
+}
+
+/* ===== Pagination unified styles (更新现有) ===== */
+.unified-pagination-wrap {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-sm) 0;
+  text-align: right;
+}
+
+/* ===== Form-inline unified styles (更新现有) ===== */
+.unified-form-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.unified-form-inline >>> .el-form-item {
+  margin-bottom: 0;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+.unified-form-inline >>> .el-form-item__label {
+  line-height: var(--button-height);
+  padding-right: var(--spacing-md);
+  color: var(--form-label-color);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  font-size: var(--font-size-base);
+}
+
+.unified-form-inline >>> .el-input__inner,
+.unified-form-inline >>> .el-select .el-input__inner,
+.unified-form-inline >>> .el-input-number__inner {
+  height: var(--button-height);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+  font-size: var(--font-size-base);
+}
+
+.unified-form-inline >>> .el-input__inner:focus,
+.unified-form-inline >>> .el-select .el-input__inner:focus,
+.unified-form-inline >>> .el-input-number__inner:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
+}
+
+.unified-form-inline >>> .el-button {
+  height: var(--button-height);
+  padding: 0 var(--button-padding-h);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
 }

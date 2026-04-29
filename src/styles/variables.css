@@ -1,48 +1,49 @@
-/* 全局样式变量 - 统一字体大小、间距、颜色 */
+/* Global style variables - unified font size, spacing, colors */
 
-/* ===== 字体大小 ===== */
---font-size-xs: 12px;
---font-size-sm: 13px;
---font-size-base: 14px;
---font-size-md: 15px;
---font-size-lg: 16px;
---font-size-xl: 18px;
---font-size-xxl: 20px;
+/* ===== Font sizes ===== */
+--font-size-xs: 12px;  /* Auxiliary text */
+--font-size-sm: 13px;  /* Secondary information */
+--font-size-base: 14px; /* Body text */
+--font-size-md: 15px;  /* Emphasized text */
+--font-size-lg: 16px;  /* Small heading */
+--font-size-xl: 18px;  /* Heading */
+--font-size-xxl: 20px; /* Large heading */
 
-/* ===== 字体粗细 ===== */
---font-weight-normal: 400;
---font-weight-medium: 500;
---font-weight-semibold: 600;
---font-weight-bold: 700;
+/* ===== Font weights ===== */
+--font-weight-light: 300;   /* Auxiliary text */
+--font-weight-normal: 400;  /* Body text */
+--font-weight-medium: 500;  /* Secondary heading */
+--font-weight-semibold: 600; /* Heading */
+--font-weight-bold: 700;    /* Emphasis */
 
-/* ===== 行高 ===== */
+/* ===== Line heights ===== */
 --line-height-tight: 1.4;
 --line-height-base: 1.5;
 --line-height-relaxed: 1.6;
 --line-height-loose: 1.75;
 
-/* ===== 间距 Spacing ===== */
+/* ===== Spacing ===== */
 --spacing-xs: 4px;
 --spacing-sm: 8px;
---spacing-md: 12px;
---spacing-lg: 16px;
---spacing-xl: 20px;
---spacing-xxl: 24px;
---spacing-xxxl: 32px;
+--spacing-md: 16px;
+--spacing-lg: 24px;
+--spacing-xl: 32px;
+--spacing-xxl: 40px;
+--spacing-xxxl: 48px;
 
-/* ===== 边框圆角 ===== */
+/* ===== Border radius ===== */
 --radius-sm: 4px;
 --radius-md: 6px;
 --radius-lg: 8px;
 --radius-xl: 12px;
 
-/* ===== 阴影 ===== */
+/* ===== Shadows ===== */
 --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
 --shadow-base: 0 2px 8px rgba(0, 0, 0, 0.1);
 --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
 --shadow-xl: 0 6px 20px rgba(0, 0, 0, 0.15);
 
-/* ===== 过渡 ===== */
+/* ===== Transitions ===== */
 --transition-fast: 0.15s;
 --transition-base: 0.2s;
 --transition-slow: 0.3s;
@@ -53,51 +54,56 @@
 --z-notification: 3000;
 --z-tooltip: 4000;
 
-/* ===== 表格相关 ===== */
+/* ===== Table related ===== */
 --table-header-bg: #f5f7fa;
 --table-hover-bg: #f5f7fa;
 --table-border-color: #ebeef5;
 
-/* ===== 表单相关 ===== */
+/* ===== Form related ===== */
 --form-input-height: 36px;
 --form-label-color: #606266;
 --form-placeholder-color: #c0c4cc;
 
-/* ===== 按钮 ===== */
---button-height: 32px;
---button-height-lg: 40px;
+/* ===== Button ===== */
+--button-height: 40px;
+--button-height-lg: 48px;
 --button-padding-h: 20px;
 --button-padding-v: 8px;
 
-/* ===== 主色调 ===== */
+/* ===== Primary colors ===== */
 --primary-color: #409eff;
 --primary-color-light: #66b1ff;
 --primary-color-dark: #337ecc;
 
-/* 成功 */
---success-color: #67c23a;
+/* Primary color gradient - softer and modern */
+--gradient-primary-start: #8b9dc3;
+--gradient-primary-end: #7fd085;
+
+/* Success */
+--success-color: #52c41a;
 --success-color-light: #85ce61;
 --success-color-dark: #529b2e;
 
-/* 警告 */
---warning-color: #e6a23c;
+/* Warning */
+--warning-color: #faad14;
 --warning-color-light: #ebb563;
 --warning-color-dark: #cf9236;
 
-/* 危险 */
---danger-color: #f56c6c;
+/* Danger */
+--danger-color: #ff4d4f;
 --danger-color-light: #f78989;
 --danger-color-dark: #dd6161;
 
-/* 信息 */
+/* Info */
 --info-color: #909399;
 --info-color-light: #a6a9ad;
 --info-color-dark: #7a7b85;
 
-/* ===== 中性色 ===== */
+/* ===== Neutral colors ===== */
 --text-primary: #303133;
 --text-regular: #606266;
---text-secondary: #909399;
+--text-secondary: #606266;
+--text-tertiary: #909399;
 --text-placeholder: #c0c4cc;
 
 --border-color: #dcdfe6;
@@ -105,11 +111,11 @@
 --border-color-dark: #dcdfe6;
 
 --bg-color: #ffffff;
---bg-color-light: #fafafa;
---bg-color-secondary: #f5f7fa;
+--bg-color-light: #f8f9fb;
+--bg-color-secondary: #f0f2f5;
 --bg-color-tertiary: #f0f2f5;
 
-/* ===== Element UI 颜色 ===== */
+/* ===== Element UI colors ===== */
 --el-color-primary: var(--primary-color);
 --el-color-success: var(--success-color);
 --el-color-warning: var(--warning-color);
