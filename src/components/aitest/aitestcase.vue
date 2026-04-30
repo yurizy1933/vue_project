@@ -2,7 +2,7 @@
   <div class="aitestcase-container">
     <el-card>
       <div class="action-bar unified-action-bar">
-        <h3 class="card-title unified-card-title">AI 测试用例文档</h3>
+        <h3 class="card-title unified-card-title">用例任务</h3>
       </div>
       <div class="search-container unified-search-container">
         <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form unified-form-inline">
@@ -11,6 +11,13 @@
           </el-form-item>
           <el-form-item label="文档名称">
             <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 420px"></el-input>
+          </el-form-item>
+          <el-form-item label="任务状态">
+            <el-select v-model="searchForm.job_status" placeholder="全部" clearable style="width: 150px">
+              <el-option label="待处理" :value="0" />
+              <el-option label="处理中" :value="1" />
+              <el-option label="已完成" :value="2" />
+            </el-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleSearch" :loading="listLoading">搜索</el-button>
@@ -66,7 +73,8 @@ export default {
     return {
       searchForm: {
         project_id: '',
-        doc_name: ''
+        doc_name: '',
+        job_status: ''
       },
       listLoading: false,
       docs: [],
@@ -104,6 +112,7 @@ export default {
     resetSearch () {
       this.searchForm.project_id = ''
       this.searchForm.doc_name = ''
+      this.searchForm.job_status = ''
       this.fetchDocs()
     },
     handleSizeChange (val) {
@@ -117,7 +126,8 @@ export default {
       this.listLoading = true
       const params = {
         project_id: this.searchForm.project_id || undefined,
-        doc_name: this.searchForm.doc_name || undefined
+        doc_name: this.searchForm.doc_name || undefined,
+        job_status: this.searchForm.job_status !== '' ? this.searchForm.job_status : undefined
       }
       // 如果路由中有 doc_id 参数，也传递给接口
       if (this.$route.query.doc_id) {

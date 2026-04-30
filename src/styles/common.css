@@ -272,6 +272,7 @@ body {
 
 /* ===== Search container unified styles ===== */
 .unified-search-container {
+  margin-top: var(--spacing-lg);
   padding: var(--spacing-xl) var(--spacing-xxl);
   background: var(--bg-color-light);
   border-radius: var(--radius-lg);
