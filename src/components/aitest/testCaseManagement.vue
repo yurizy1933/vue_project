@@ -39,10 +39,13 @@
         <div class="pagination-wrap unified-pagination-wrap">
           <el-pagination
             background
-            layout="total, prev, pager, next, jumper"
-            :total="filteredCases.length"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="totalCases"
             :page-size="pageSize"
             :current-page.sync="currentPage"
+            :page-sizes="[10, 20, 50, 100]"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
           />
         </div>
       </div>
@@ -136,6 +139,7 @@ export default {
       cases: [],
       currentPage: 1,
       pageSize: 10,
+      totalCases: 0,
       viewVisible: false,
       editVisible: false,
       currentCase: {},
@@ -188,6 +192,15 @@ export default {
       this.searchForm.project_id = ''
       this.searchForm.status = ''
       this.currentPage = 1
+      this.fetchCases()
+    },
+    handleSizeChange (val) {
+      this.pageSize = val
+      this.currentPage = 1
+      this.fetchCases()
+    },
+    handleCurrentChange (val) {
+      this.currentPage = val
       this.fetchCases()
     },
     levelTagType (level) {
@@ -332,6 +345,8 @@ export default {
     fetchCases () {
       this.listLoading = true
       const params = {
+        page: this.currentPage,
+        page_size: this.pageSize,
         project_id: this.searchForm.project_id || undefined,
         status: this.searchForm.status || undefined,
         job_id: this.searchForm.job_id || undefined,
@@ -354,6 +369,12 @@ export default {
                 ? raw.list
                 : []
           // 规范化列表项，保证表格与编辑表单字段一致
+          const total = (raw && raw.pagination && typeof raw.pagination.total === 'number')
+            ? raw.pagination.total
+            : (raw && typeof raw.total === 'number')
+              ? raw.total
+              : arr.length
+          this.totalCases = total
           this.cases = arr.map(it => {
             const status = it.status != null ? String(it.status) : ''
             return {

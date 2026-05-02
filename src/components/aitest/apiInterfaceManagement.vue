@@ -177,7 +177,7 @@ export default {
       if (this.searchForm.api_doc_name) {
         params.api_doc_name = this.searchForm.api_doc_name
       }
-      this.$axios.get('/api/api_interface/get', { params })
+      this.$axios.get('/api/apicommon/api_interface/get', { params })
         .then(res => {
           const raw = res && res.data
           const list = Array.isArray(raw)
@@ -188,13 +188,9 @@ export default {
                 ? raw.list
                 : []
           // 从后端响应中获取总数
-          const total = (raw && typeof raw.total === 'number')
-            ? raw.total
-            : (raw && typeof raw.total_count === 'number')
-              ? raw.total_count
-              : (raw && typeof raw.count === 'number')
-                ? raw.count
-                : 0
+          const total = (raw && raw.pagination && typeof raw.pagination.total === 'number')
+            ? raw.pagination.total
+            : 0
           this.interfaces = list.map(it => ({
             id: it.id,
             api_name: it.api_name || '',
@@ -204,9 +200,10 @@ export default {
             response_params: it.response_params || '',
             remark: it.remark || '',
             project_name: it.project_name || '',
-            api_doc_name: it.api_doc_name || ''
+            api_doc_name: it.api_doc_name || '',
+            doc_id: it.api_doc_id || it.doc_id || ''
           }))
-          this.totalInterfaces = total
+          this.totalInterfaces = total || list.length
         })
         .catch(() => {
           this.$message.error('加载接口列表失败')
@@ -240,7 +237,7 @@ export default {
       const id = row.id
       if (!id) return
       if (!this.generatingIds.includes(id)) this.generatingIds.push(id)
-      this.$axios.post('/api/api_test_cases/generate', { api_interface_id: id })
+      this.$axios.post('/api/testcase/api/case/generate', { api_interface_id: id, doc_id: row.doc_id })
         .then(res => {
           this.$message.success('测试用例生成成功')
           this.generatingIds = this.generatingIds.filter(x => x !== id)
@@ -298,7 +295,7 @@ export default {
       })
 
       this.submitting = true
-      this.$axios.post('/api/test_data/create', {
+      this.$axios.post('/api/apicommon/test_data/create', {
         api_interface_id: this.currentInterface.id,
         test_data_name: this.testDataName.trim(),
         test_data_json: JSON.stringify(testDataJson),

@@ -196,7 +196,7 @@ export default {
       if (this.searchForm.api_name) {
         params.api_name = this.searchForm.api_name
       }
-      this.$axios.get('/api/test_data/get', { params })
+      this.$axios.get('/api/apicommon/test_data/get', { params })
         .then(res => {
           const raw = res && res.data
           const list = Array.isArray(raw)
@@ -228,7 +228,7 @@ export default {
     },
     fetchInterfaces () {
       this.interfacesLoading = true
-      this.$axios.get('/api/api_interface/get')
+      this.$axios.get('/api/apicommon/api_interface/get')
         .then(res => {
           const raw = res && res.data
           const list = Array.isArray(raw)
@@ -349,7 +349,7 @@ export default {
         params.api_interface_id = this.editForm.api_interface_id
       }
 
-      const apiUrl = this.editForm.id ? '/api/test_data/update' : '/api/test_data/create'
+      const apiUrl = this.editForm.id ? '/api/apicommon/test_data/update' : '/api/apicommon/test_data/create'
 
       // 如果是编辑，添加id
       if (this.editForm.id) {
@@ -374,7 +374,7 @@ export default {
       const id = row.id
       if (!id) return
       this.deletingIds.push(id)
-      this.$axios.post('/api/test_data/delete', { id })
+      this.$axios.post('/api/apicommon/test_data/delete', { id })
         .then(() => {
           this.$message.success('删除成功')
           this.fetchTestData()

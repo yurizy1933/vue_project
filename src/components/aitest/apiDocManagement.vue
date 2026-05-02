@@ -423,7 +423,7 @@ export default {
       this.docTitle = row.doc_name || row.filename || '接口列表'
       this.interfaceLoading = true
       this.interfaces = []
-      this.$axios.get('/api/api_interface/get', { params: { api_doc_id: id } })
+      this.$axios.get('/api/apicommon/api_interface/get', { params: { api_doc_id: id } })
         .then(res => {
           console.log('接口列表响应:', res)
           const raw = res && res.data
@@ -461,7 +461,7 @@ export default {
       const id = row.id
       if (!id) return
       if (!this.parsingIds.includes(id)) this.parsingIds.push(id)
-      this.$axios.post('/api/api_doc/parse', { doc_id: id })
+      this.$axios.post('/api/common/api/parse/sync', { doc_id: id })
         .then(() => {
           this.$message.success('文档解析成功')
           this.parsingIds = this.parsingIds.filter(x => x !== id)

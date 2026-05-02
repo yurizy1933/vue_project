@@ -589,7 +589,8 @@ export default {
   transition: box-shadow 0.2s;
   border: 1px solid #e4e7ed;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  padding-bottom: 48px;
 }
 
 /* Content area top separator */

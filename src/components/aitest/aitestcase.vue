@@ -147,13 +147,13 @@ export default {
                 : []
           // 规范化字段，包含任务状态和 job_id
           this.docs = list.map(it => ({
-            id: it.id != null ? it.id : (it.job_id != null ? it.job_id : it.doc_id),
-            job_id: it.job_id != null ? it.job_id : (it.id != null ? it.id : null),
-            doc_id: it.doc_id != null ? it.doc_id : (it.id != null ? it.id : null),
-            project_name: it.project_name || it.project || it.projectName || '',
-            doc_name: it.doc_name || it.filename || it.name || '',
-            // job_status: 0=待处理, 1=处理中, 2=已完成
-            job_status: it.job_status != null ? it.job_status : (it.status != null ? it.status : null)
+            id: it.id,
+            job_id: it.id,
+            doc_id: it.doc_id,
+            project_name: it.project_name || '',
+            doc_name: it.doc_filename || it.doc_name || '',
+            job_status: it.job_status,
+            job_status_display: it.job_status_display || ''
           }))
         })
         .catch(() => {
