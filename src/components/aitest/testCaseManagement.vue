@@ -9,33 +9,84 @@
         </el-button>
       </div>
 
+      <!-- 搜索栏 -->
+      <div class="search-container unified-search-container">
+        <el-form :inline="true" :model="searchForm" class="unified-form-inline">
+          <el-form-item label="用例名称">
+            <el-input v-model="searchForm.keyword" placeholder="请输入名称" clearable style="width: 200px" />
+          </el-form-item>
+          <el-form-item label="来源类型">
+            <el-select v-model="searchForm.source_type" placeholder="全部" clearable
+              @change="onSourceTypeChange" style="width: 120px">
+              <el-option label="全部" value="" />
+              <el-option label="文档" value="doc" />
+              <el-option label="接口" value="api_interface" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="来源">
+            <el-select v-model="searchForm.source_id" placeholder="全部" clearable
+              :disabled="!searchForm.source_type" style="width: 220px">
+              <el-option label="全部" value="" />
+              <el-option v-for="s in sourceOptions" :key="s.value" :label="s.label" :value="s.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">查询</el-button>
+            <el-button @click="resetSearch">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <!-- Tab 切换 -->
+      <el-tabs v-model="activeTab" @tab-click="onTabClick">
+        <el-tab-pane label="全部" name="" />
+        <el-tab-pane label="接口用例" name="api" />
+        <el-tab-pane label="文档用例" name="doc" />
+      </el-tabs>
+
       <!-- 用例列表 -->
       <div class="table-wrap unified-table-wrap">
-        <el-table :data="filteredCases" border stripe size="small" v-loading="listLoading" class="project-table unified-table" style="width: 100%">
+        <el-table :data="filteredCases" border stripe size="small" v-loading="listLoading"
+          class="project-table unified-table" style="width: 100%">
           <el-table-column type="index" width="60" label="#" />
-          <el-table-column prop="name" label="用例名称" min-width="200"></el-table-column>
-          <el-table-column prop="precondition" label="前置条件" min-width="220" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="steps" label="执行步骤" min-width="260" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="expected" label="预期结果" min-width="220" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="status" label="状态" width="100">
+          <el-table-column prop="name" label="用例名称" min-width="180" show-overflow-tooltip />
+          <el-table-column prop="case_type" label="类型" width="100">
+            <template #default="scope">
+              <el-tag :type="scope.row.case_type === 'api' ? 'primary' : 'warning'" size="small">
+                {{ scope.row.case_type === 'api' ? '接口用例' : '文档用例' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="source_name" label="来源" min-width="140">
+            <template #default="scope">
+              <el-button type="text" @click="goToSource(scope.row)" v-if="scope.row.source_name">
+                {{ scope.row.source_name }}
+              </el-button>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="steps" label="执行步骤" min-width="200" show-overflow-tooltip />
+          <el-table-column prop="level" label="等级" width="80">
+            <template #default="scope">
+              <el-tag :type="levelTagType(scope.row.level)" size="small">{{ scope.row.level || '-' }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="status" label="状态" width="80">
             <template #default="scope">
               <el-tag :type="scope.row.status === 'enabled' ? 'success' : 'info'">{{ scope.row.status || '-' }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="level" label="用例等级" width="100">
+          <el-table-column label="操作" width="260" fixed="right">
             <template #default="scope">
-              <el-tag :type="levelTagType(scope.row.level)">{{ scope.row.level }}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="220" fixed="right">
-            <template #default="scope">
+              <el-button type="text" v-if="scope.row.case_type === 'api'"
+                @click="executeCase(scope.row)"><i class="fa fa-play mr-1"></i>执行</el-button>
               <el-button type="text" @click="viewCase(scope.row)" :disabled="detailLoading"><i class="fa fa-eye mr-1"></i>查看</el-button>
               <el-button type="text" @click="openEdit(scope.row)"><i class="fa fa-edit mr-1"></i>编辑</el-button>
               <el-button type="text" @click="confirmDelete(scope.row)" :loading="isDeleting(scope.row.id)"><i class="fa fa-trash mr-1"></i>删除</el-button>
             </template>
           </el-table-column>
         </el-table>
-        <!-- 分页组件 -->
+
         <div class="pagination-wrap unified-pagination-wrap">
           <el-pagination
             background
@@ -52,68 +103,70 @@
     </el-card>
 
     <!-- 查看抽屉 -->
-    <el-drawer
-      :visible.sync="viewVisible"
-      title="用例详情"
-      size="60%"
-      :close-on-press-escape="true"
-      :close-on-click-modal="false"
-      :modal="true"
-      :modal-append-to-body="true"
-      :append-to-body="true"
-      class="case-detail-drawer">
+    <el-drawer :visible.sync="viewVisible" title="用例详情" size="60%"
+      :close-on-click-modal="false" :append-to-body="true">
       <div class="drawer-content" v-loading="detailLoading">
-        <el-descriptions :column="1" border class="case-detail-descriptions">
-          <el-descriptions-item label="用例名称" :span="1">
-            <div class="detail-text">{{ currentCase.name || '-' }}</div>
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="用例名称">{{ currentCase.name || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="用例类型">
+            <el-tag :type="currentCase.case_type === 'api' ? 'primary' : 'warning'" size="small">
+              {{ currentCase.case_type === 'api' ? '接口用例' : '文档用例' }}
+            </el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="前置条件" :span="1">
+          <el-descriptions-item label="前置条件">
             <div class="detail-text">{{ currentCase.precondition || '-' }}</div>
           </el-descriptions-item>
-          <el-descriptions-item label="执行步骤" :span="1">
+          <el-descriptions-item label="执行步骤">
             <div class="detail-text detail-steps">{{ currentCase.steps || '-' }}</div>
           </el-descriptions-item>
-          <el-descriptions-item label="预期结果" :span="1">
+          <el-descriptions-item label="预期结果">
             <div class="detail-text">{{ currentCase.expected || '-' }}</div>
           </el-descriptions-item>
-          <el-descriptions-item label="用例等级" :span="1">
+          <el-descriptions-item label="用例等级">
             <el-tag :type="levelTagType(currentCase.level)" size="medium">{{ currentCase.level || '-' }}</el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="状态" :span="1">
+          <el-descriptions-item label="状态">
             <el-tag :type="currentCase.status === 'enabled' ? 'success' : 'info'" size="medium">
-              {{ currentCase.status === 'enabled' ? '启用' : (currentCase.status === 'disabled' ? '禁用' : (currentCase.status || '-')) }}
+              {{ currentCase.status === 'enabled' ? '启用' : '禁用' }}
             </el-tag>
           </el-descriptions-item>
         </el-descriptions>
       </div>
     </el-drawer>
 
-    <!-- 新增/编辑对话框 -->
-    <el-dialog :title="editForm.id ? '编辑用例' : '新建用例'" :visible.sync="editVisible" width="680px" append-to-body :close-on-click-modal="false">
+    <!-- 新建/编辑对话框 -->
+    <el-dialog :title="editForm.id ? '编辑用例' : '新建用例'" :visible.sync="editVisible"
+      width="680px" append-to-body :close-on-click-modal="false">
       <el-form :model="editForm" :rules="rules" ref="editFormRef" label-width="96px">
+        <el-form-item label="用例类型" prop="case_type">
+          <el-radio-group v-model="editForm.case_type">
+            <el-radio label="api">接口用例</el-radio>
+            <el-radio label="doc">文档用例</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="用例名称" prop="name">
-          <el-input v-model="editForm.name" placeholder="请输入用例名称" ref="nameInput"></el-input>
+          <el-input v-model="editForm.name" placeholder="请输入用例名称" ref="nameInput" />
         </el-form-item>
         <el-form-item label="前置条件" prop="precondition">
-          <el-input type="textarea" :rows="2" v-model="editForm.precondition" placeholder="请输入前置条件"></el-input>
+          <el-input type="textarea" :rows="2" v-model="editForm.precondition" placeholder="请输入前置条件" />
         </el-form-item>
         <el-form-item label="执行步骤" prop="steps">
-          <el-input type="textarea" :rows="4" v-model="editForm.steps" placeholder="请分步描述执行步骤"></el-input>
+          <el-input type="textarea" :rows="4" v-model="editForm.steps" placeholder="请分步描述执行步骤" />
         </el-form-item>
         <el-form-item label="预期结果" prop="expected">
-          <el-input type="textarea" :rows="2" v-model="editForm.expected" placeholder="请输入预期结果"></el-input>
+          <el-input type="textarea" :rows="2" v-model="editForm.expected" placeholder="请输入预期结果" />
         </el-form-item>
         <el-form-item label="用例等级" prop="level">
           <el-select v-model="editForm.level" placeholder="请选择等级" style="width: 100%">
-            <el-option label="P0" value="P0"></el-option>
-            <el-option label="P1" value="P1"></el-option>
-            <el-option label="P2" value="P2"></el-option>
+            <el-option label="P0" value="P0" />
+            <el-option label="P1" value="P1" />
+            <el-option label="P2" value="P2" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="editForm.status" placeholder="请选择状态" style="width: 100%">
-            <el-option label="启用" value="enabled"></el-option>
-            <el-option label="禁用" value="disabled"></el-option>
+            <el-option label="启用" value="enabled" />
+            <el-option label="禁用" value="disabled" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -123,7 +176,7 @@
       </span>
     </el-dialog>
   </div>
-  </template>
+</template>
 
 <script>
 export default {
@@ -131,11 +184,17 @@ export default {
   data () {
     return {
       searchForm: {
-        project_id: '',
-        status: '',
+        keyword: '',
+        case_type: '',
+        source_type: '',
+        source_id: '',
         job_id: '',
-        doc_id: ''
+        doc_id: '',
+        api_interface_id: '',
+        status: ''
       },
+      activeTab: '',
+      sourceOptions: [],
       cases: [],
       currentPage: 1,
       pageSize: 10,
@@ -144,7 +203,8 @@ export default {
       editVisible: false,
       currentCase: {},
       editForm: {
-        caseid: null,
+        id: null,
+        case_type: '',
         name: '',
         precondition: '',
         steps: '',
@@ -157,6 +217,7 @@ export default {
       submitLoading: false,
       deletingIds: [],
       rules: {
+        case_type: [{ required: true, message: '请选择用例类型', trigger: 'change' }],
         name: [{ required: true, message: '请输入用例名称', trigger: 'blur' }],
         steps: [{ required: true, message: '请输入执行步骤', trigger: 'blur' }],
         expected: [{ required: true, message: '请输入预期结果', trigger: 'blur' }]
@@ -164,33 +225,88 @@ export default {
     }
   },
   created () {
-    // 如果路由中有 job_id 或 doc_id 参数，自动设置到搜索表单中
-    if (this.$route.query.job_id) {
-      // 如果有 job_id，可能需要通过接口获取对应的 doc_id 或 project_id
-      // 这里先尝试直接使用 job_id 作为筛选条件
-      this.searchForm.job_id = this.$route.query.job_id
+    const hasQuery = this.$route.query.job_id || this.$route.query.doc_id || this.$route.query.api_interface_id
+    if (hasQuery) {
+      this.searchForm.job_id = this.$route.query.job_id || ''
+      this.searchForm.doc_id = this.$route.query.doc_id || ''
+      this.searchForm.api_interface_id = this.$route.query.api_interface_id || ''
+      if (this.$route.query.case_type) {
+        this.activeTab = this.$route.query.case_type
+        this.searchForm.case_type = this.$route.query.case_type
+      }
+      this.fetchCases()
+    } else {
+      this.loadLatestJobCases()
     }
-    if (this.$route.query.doc_id) {
-      // 如果有 doc_id，可能需要通过接口获取对应的 project_id
-      // 这里先尝试直接使用 doc_id 作为筛选条件
-      this.searchForm.doc_id = this.$route.query.doc_id
-    }
-    this.fetchCases()
   },
   computed: {
     filteredCases () {
-      // 列表已由后端过滤，这里直接返回
       return this.cases
     }
   },
   methods: {
+    loadLatestJobCases () {
+      this.$axios.get('/api/testcase/ai_job/get', { params: { page: 1, page_size: 1 } })
+        .then(res => {
+          const raw = res && res.data
+          const arr = Array.isArray(raw) ? raw
+            : (raw && Array.isArray(raw.data)) ? raw.data
+              : (raw && Array.isArray(raw.list)) ? raw.list : []
+          if (arr.length > 0) {
+            const job = arr[0]
+            this.searchForm.job_id = job.id || job.job_id || ''
+            this.searchForm.doc_id = job.doc_id || ''
+          }
+          this.fetchCases()
+        })
+        .catch(() => { this.fetchCases() })
+    },
+    onSourceTypeChange (val) {
+      this.searchForm.source_id = ''
+      this.sourceOptions = []
+      if (val === 'doc') {
+        this.$axios.get('/api/common/doc/get', { params: { doc_type: 'prd' } })
+          .then(res => {
+            const raw = res && res.data
+            const list = Array.isArray(raw) ? raw
+              : (raw && Array.isArray(raw.data)) ? raw.data
+                : (raw && Array.isArray(raw.list)) ? raw.list : []
+            this.sourceOptions = list.map(it => ({
+              value: it.id != null ? it.id : it.doc_id,
+              label: it.file_name || it.filename || it.doc_name || ''
+            })).filter(it => it.value != null)
+          })
+          .catch(() => {})
+      } else if (val === 'api_interface') {
+        this.$axios.get('/api/apicommon/api_interface/get')
+          .then(res => {
+            const raw = res && res.data
+            const list = Array.isArray(raw) ? raw
+              : (raw && Array.isArray(raw.data)) ? raw.data
+                : (raw && Array.isArray(raw.list)) ? raw.list : []
+            this.sourceOptions = list.map(it => ({
+              value: it.id,
+              label: (it.api_name || '') + ' ' + (it.api_path || '')
+            })).filter(it => it.value != null)
+          })
+          .catch(() => {})
+      }
+    },
+    onTabClick (tab) {
+      this.searchForm.case_type = tab.name
+      this.currentPage = 1
+      this.fetchCases()
+    },
     handleSearch () {
       this.currentPage = 1
       this.fetchCases()
     },
     resetSearch () {
-      this.searchForm.project_id = ''
-      this.searchForm.status = ''
+      this.searchForm.keyword = ''
+      this.searchForm.case_type = this.activeTab
+      this.searchForm.source_type = ''
+      this.searchForm.source_id = ''
+      this.sourceOptions = []
       this.currentPage = 1
       this.fetchCases()
     },
@@ -208,6 +324,25 @@ export default {
       if (level === 'P1') return 'warning'
       return 'info'
     },
+    executeCase (row) {
+      this.$router.push({
+        path: '/testCaseExecution',
+        query: {
+          case_id: row.id,
+          case_name: row.name || '',
+          steps: row.steps || '',
+          expected: row.expected || '',
+          base_url: row.base_url || ''
+        }
+      })
+    },
+    goToSource (row) {
+      if (row.source_type === 'doc' && row.doc_id) {
+        this.$router.push({ path: '/docManagement', query: { doc_id: row.doc_id } })
+      } else if (row.source_type === 'api_interface' && row.api_interface_id) {
+        this.$router.push({ path: '/apiInterfaceManagement' })
+      }
+    },
     viewCase (row) {
       this.viewVisible = true
       this.detailLoading = true
@@ -217,8 +352,10 @@ export default {
           const raw = res && res.data
           const data = raw && (raw.data || raw.detail || raw)
           const status = data.status != null ? String(data.status) : ''
+          const caseType = data.doc_type || data.case_type || ''
           this.currentCase = {
             id: data.id != null ? data.id : (data.case_id != null ? data.case_id : data.caseid),
+            case_type: caseType || 'doc',
             name: data.title || data.name || data.case_name || '',
             precondition: data.precondition || data.pre || '',
             steps: data.test_steps || data.steps || data.step || '',
@@ -227,18 +364,16 @@ export default {
             status: status === 'active' ? 'enabled' : (status === 'inactive' ? 'disabled' : status)
           }
         })
-        .catch(() => {
-          this.$message.error('加载详情失败')
-        })
-        .finally(() => {
-          this.detailLoading = false
-        })
+        .catch(() => { this.$message.error('加载详情失败') })
+        .finally(() => { this.detailLoading = false })
     },
     openEdit (row) {
       if (row) {
         const status = row.status != null ? String(row.status) : ''
+        const caseType = row.doc_type || row.case_type || ''
         this.editForm = {
           id: row.id != null ? row.id : (row.case_id != null ? row.case_id : row.caseid) || null,
+          case_type: caseType || 'doc',
           name: row.name || row.title || row.case_name || '',
           precondition: row.precondition || row.pre || '',
           steps: row.steps || row.test_steps || row.step || '',
@@ -247,7 +382,7 @@ export default {
           status: status === 'active' ? 'enabled' : (status === 'inactive' ? 'disabled' : status)
         }
       } else {
-        this.editForm = { id: null, name: '', precondition: '', steps: '', expected: '', level: '', status: '' }
+        this.editForm = { id: null, case_type: '', name: '', precondition: '', steps: '', expected: '', level: '', status: '' }
       }
       this.editVisible = true
       this.$nextTick(() => {
@@ -266,20 +401,13 @@ export default {
           expected_result: this.editForm.expected,
           precondition: this.editForm.precondition,
           priority: this.editForm.level,
-          status: this.editForm.status
+          status: this.editForm.status,
+          case_type: this.editForm.case_type
         }
         this.$axios.post('/api/testcase/create', payload)
-          .then(res => {
-            this.$message.success('创建成功')
-            this.editVisible = false
-            this.fetchCases()
-          })
-          .catch(() => {
-            this.$message.error('创建失败')
-          })
-          .finally(() => {
-            this.submitLoading = false
-          })
+          .then(() => { this.$message.success('创建成功'); this.editVisible = false; this.fetchCases() })
+          .catch(() => { this.$message.error('创建失败') })
+          .finally(() => { this.submitLoading = false })
       })
     },
     updateCase () {
@@ -293,20 +421,13 @@ export default {
           expected_result: this.editForm.expected,
           precondition: this.editForm.precondition,
           priority: this.editForm.level,
-          status: this.editForm.status
+          status: this.editForm.status,
+          case_type: this.editForm.case_type
         }
         this.$axios.post('/api/testcase/update', payload)
-          .then(res => {
-            this.$message.success('更新成功')
-            this.editVisible = false
-            this.fetchCases()
-          })
-          .catch(() => {
-            this.$message.error('更新失败')
-          })
-          .finally(() => {
-            this.submitLoading = false
-          })
+          .then(() => { this.$message.success('更新成功'); this.editVisible = false; this.fetchCases() })
+          .catch(() => { this.$message.error('更新失败') })
+          .finally(() => { this.submitLoading = false })
       })
     },
     submitEdit () {
@@ -321,27 +442,16 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.removeCase(row)
-      }).catch(() => {})
+      }).then(() => { this.removeCase(row) }).catch(() => {})
     },
     removeCase (row) {
       this.deletingIds.push(row.id)
       this.$axios.post('/api/testcase/delete', { id: row.id })
-        .then(() => {
-          this.$message.success('删除成功')
-          this.fetchCases()
-        })
-        .catch(() => {
-          this.$message.error('删除失败')
-        })
-        .finally(() => {
-          this.deletingIds = this.deletingIds.filter(id => id !== row.id)
-        })
+        .then(() => { this.$message.success('删除成功'); this.fetchCases() })
+        .catch(() => { this.$message.error('删除失败') })
+        .finally(() => { this.deletingIds = this.deletingIds.filter(id => id !== row.id) })
     },
-    isDeleting (id) {
-      return this.deletingIds.includes(id)
-    },
+    isDeleting (id) { return this.deletingIds.includes(id) },
     fetchCases () {
       this.listLoading = true
       const params = {
@@ -350,89 +460,67 @@ export default {
         project_id: this.searchForm.project_id || undefined,
         status: this.searchForm.status || undefined,
         job_id: this.searchForm.job_id || undefined,
-        doc_id: this.searchForm.doc_id || undefined
+        doc_id: this.searchForm.doc_id || undefined,
+        api_interface_id: this.searchForm.api_interface_id || undefined,
+        case_type: this.searchForm.case_type || undefined,
+        keyword: this.searchForm.keyword || undefined
       }
-      // 移除 undefined 值
-      Object.keys(params).forEach(key => {
-        if (params[key] === undefined) {
-          delete params[key]
+      if (this.searchForm.source_id) {
+        if (this.searchForm.source_type === 'doc') {
+          params.doc_id = this.searchForm.source_id
+        } else if (this.searchForm.source_type === 'api_interface') {
+          params.api_interface_id = this.searchForm.source_id
         }
+      }
+      Object.keys(params).forEach(key => {
+        if (params[key] === undefined || params[key] === '') delete params[key]
       })
       this.$axios.get('/api/testcase/get', { params })
         .then(res => {
           const raw = res && res.data
-          const arr = Array.isArray(raw)
-            ? raw
-            : (raw && Array.isArray(raw.data))
-              ? raw.data
-              : (raw && Array.isArray(raw.list))
-                ? raw.list
-                : []
-          // 规范化列表项，保证表格与编辑表单字段一致
+          const arr = Array.isArray(raw) ? raw
+            : (raw && Array.isArray(raw.data)) ? raw.data
+              : (raw && Array.isArray(raw.list)) ? raw.list : []
           const total = (raw && raw.pagination && typeof raw.pagination.total === 'number')
             ? raw.pagination.total
-            : (raw && typeof raw.total === 'number')
-              ? raw.total
-              : arr.length
+            : (raw && typeof raw.total === 'number') ? raw.total : arr.length
           this.totalCases = total
           this.cases = arr.map(it => {
             const status = it.status != null ? String(it.status) : ''
+            const caseType = it.doc_type || it.case_type || ''
             return {
               id: it.id != null ? it.id : (it.case_id != null ? it.case_id : it.caseid),
+              case_type: caseType || 'doc',
               name: it.name || it.title || it.case_name || '',
               precondition: it.precondition || it.pre || '',
               steps: it.steps || it.test_steps || it.step || '',
               expected: it.expected || it.expected_result || it.expect || '',
               level: it.level != null ? String(it.level) : (it.priority != null ? String(it.priority) : ''),
-              status: status === 'active' ? 'enabled' : (status === 'inactive' ? 'disabled' : status)
+              status: status === 'active' ? 'enabled' : (status === 'inactive' ? 'disabled' : status),
+              source_name: it.source_name || it.doc_name || it.api_name || '',
+              source_type: it.source_type || (it.doc_id ? 'doc' : (it.api_interface_id ? 'api_interface' : '')),
+              doc_id: it.doc_id || '',
+              api_interface_id: it.api_interface_id || '',
+              base_url: it.base_url || ''
             }
           })
         })
-        .catch(() => {
-          this.$message.error('加载列表失败')
-          this.cases = []
-        })
-        .finally(() => {
-          this.listLoading = false
-        })
+        .catch(() => { this.$message.error('加载列表失败'); this.cases = [] })
+        .finally(() => { this.listLoading = false })
     }
   }
 }
 </script>
 
 <style scoped>
-.testcase-container {
-  /* 使用 unified-container 类，保留必要的特殊样式 */
-}
+.testcase-container {}
 
-.mr-1 {
-  margin-right: 6px;
-}
+.mr-1 { margin-right: 6px; }
 
-/* Detail drawer styles */
-.case-detail-drawer {
-  z-index: 3000 !important;
-}
-
-.case-detail-drawer >>> .el-drawer {
-  z-index: 3000;
-}
-
-.case-detail-drawer >>> .el-drawer__header {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e4e7ed;
-}
-
-.case-detail-drawer >>> .el-drawer__title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.case-detail-drawer >>> .el-drawer__body {
-  padding: 24px;
-  overflow-y: auto;
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 .drawer-content {
@@ -440,30 +528,10 @@ export default {
   min-height: 200px;
 }
 
-/* Detail description list styles */
-.case-detail-descriptions {
-  width: 100%;
-}
-
-.case-detail-descriptions >>> .el-descriptions__label {
-  width: 120px;
-  font-weight: 600;
-  color: #606266;
-  background-color: #f5f7fa;
-  text-align: right;
-  padding: 12px 16px;
-}
-
-.case-detail-descriptions >>> .el-descriptions__content {
-  padding: 12px 16px;
-  color: #303133;
-}
-
 .detail-text {
   line-height: 1.8;
   color: #303133;
   word-wrap: break-word;
-  word-break: break-all;
   white-space: pre-wrap;
 }
 

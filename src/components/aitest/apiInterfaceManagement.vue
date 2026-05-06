@@ -45,11 +45,15 @@
           </template>
         </el-table-column>
         <el-table-column prop="api_path" label="API路径" min-width="200" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="base_url" label="Base URL" min-width="180" show-overflow-tooltip></el-table-column>
         <el-table-column prop="request_params" label="请求参数" min-width="150" show-overflow-tooltip></el-table-column>
         <el-table-column prop="response_params" label="响应参数" min-width="150" show-overflow-tooltip></el-table-column>
         <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip></el-table-column>
-        <el-table-column label="操作" width="220" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template slot-scope="scope">
+            <el-button type="text" @click="viewCases(scope.row)">
+              <i class="fa fa-list-alt mr-1"></i>查看用例
+            </el-button>
             <el-button
               type="text"
               @click="generateTestCases(scope.row)"
@@ -196,6 +200,7 @@ export default {
             api_name: it.api_name || '',
             api_path: it.api_path || '',
             method: it.method || 'GET',
+            base_url: it.base_url || '',
             request_params: it.request_params || '',
             response_params: it.response_params || '',
             remark: it.remark || '',
@@ -232,6 +237,12 @@ export default {
       if (m === 'PUT') return 'warning'
       if (m === 'DELETE') return 'danger'
       return 'info'
+    },
+    viewCases (row) {
+      this.$router.push({
+        path: '/testCaseManagement',
+        query: { api_interface_id: row.id, case_type: 'api' }
+      })
     },
     generateTestCases (row) {
       const id = row.id

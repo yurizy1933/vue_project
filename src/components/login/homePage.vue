@@ -42,29 +42,29 @@
               <i class="fa fa-home"></i>
               <span slot="title">仪表盘</span>
             </el-menu-item>
-            <el-submenu index="ai-cases">
+            <el-submenu index="test-cases">
               <template #title>
                 <i class="fa fa-magic"></i>
-                <span>功能测试</span>
+                <span>测试用例</span>
               </template>
-              <el-menu-item index="/projectPrdManagement">
+              <el-menu-item index="/docManagement">
                 <i class="fa fa-file-text-o"></i>
-                <span>需求文档</span>
+                <span>文档管理</span>
               </el-menu-item>
               <el-menu-item index="/aitestcase">
-                <i class="fa fa-file-text-o"></i>
+                <i class="fa fa-tasks"></i>
                 <span>用例任务</span>
               </el-menu-item>
-            </el-submenu>
-            <el-submenu index="ai-tools">
-              <template #title>
-                <i class="fa fa-magic"></i>
-                <span>接口测试</span>
-              </template>
-              <el-menu-item index="/apiDocManagement">
-                <i class="fa fa-file-text-o"></i>
-                <span>接口文档管理</span>
+              <el-menu-item index="/testCaseManagement">
+                <i class="fa fa-list-alt"></i>
+                <span>测试用例</span>
               </el-menu-item>
+            </el-submenu>
+            <el-submenu index="test-execution">
+              <template #title>
+                <i class="fa fa-play-circle"></i>
+                <span>测试执行</span>
+              </template>
               <el-menu-item index="/apiInterfaceManagement">
                 <i class="fa fa-cogs"></i>
                 <span>接口管理</span>
@@ -73,8 +73,8 @@
                 <i class="fa fa-database"></i>
                 <span>测试数据管理</span>
               </el-menu-item>
-              <el-menu-item index="/docManagement">
-                <i class="fa fa-file-text-o"></i>
+              <el-menu-item index="/testCaseHistory">
+                <i class="fa fa-history"></i>
                 <span>测试执行</span>
               </el-menu-item>
             </el-submenu>
@@ -154,12 +154,15 @@ export default {
         'CodeGeneration': '代码生成',
         'projectManagement': '项目管理',
         'UserManagement': '用户管理',
-        'projectPrdManagement': '需求文档管理',
+        'docManagement': '文档管理',
         'testCaseManagement': '测试用例',
         'aitestcase': '用例任务管理',
         'apiDocManagement': '接口文档管理',
         'apiInterfaceManagement': '接口管理',
-        'testDataManagement': '测试数据管理'
+        'testDataManagement': '测试数据管理',
+        'testCaseExecution': '用例执行',
+        'testCaseResult': '执行结果',
+        'testCaseHistory': '执行历史'
       }
       this.pageTitle = titles[routeName] || '未知页面'
     }

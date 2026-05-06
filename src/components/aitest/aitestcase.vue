@@ -6,11 +6,11 @@
       </div>
       <div class="search-container unified-search-container">
         <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form unified-form-inline">
-          <el-form-item label="项目名称">
-            <el-input v-model="searchForm.project_id" placeholder="请输入项目名称" clearable style="width: 260px"></el-input>
-          </el-form-item>
-          <el-form-item label="文档名称">
-            <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 420px"></el-input>
+          <el-form-item label="任务类型">
+            <el-select v-model="searchForm.job_type" placeholder="全部" clearable style="width: 150px">
+              <el-option label="接口用例生成" value="api" />
+              <el-option label="文档用例生成" value="doc" />
+            </el-select>
           </el-form-item>
           <el-form-item label="任务状态">
             <el-select v-model="searchForm.job_status" placeholder="全部" clearable style="width: 150px">
@@ -18,6 +18,9 @@
               <el-option label="处理中" :value="1" />
               <el-option label="已完成" :value="2" />
             </el-select>
+          </el-form-item>
+          <el-form-item label="文档名称">
+            <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 420px"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleSearch" :loading="listLoading">搜索</el-button>
@@ -30,17 +33,24 @@
     <div class="table-wrap unified-table-wrap">
         <el-table :data="docs" stripe v-loading="listLoading" class="project-table unified-table" style="width: 100%">
           <el-table-column type="index" width="60" label="#" />
-          <el-table-column prop="project_name" label="项目名称" min-width="220" />
-          <el-table-column prop="doc_name" label="需求文档" min-width="320" show-overflow-tooltip />
-          <el-table-column prop="job_status" label="任务状态" width="120">
-            <template slot-scope="scope">
+          <el-table-column prop="project_name" label="项目名称" min-width="180" />
+          <el-table-column prop="doc_name" label="文档/接口名" min-width="260" show-overflow-tooltip />
+          <el-table-column prop="job_type" label="任务类型" width="120">
+            <template #default="scope">
+              <el-tag :type="scope.row.job_type === 'api' ? 'primary' : 'warning'" size="small">
+                {{ scope.row.job_type === 'api' ? '接口用例生成' : '文档用例生成' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="job_status" label="任务状态" width="100">
+            <template #default="scope">
               <el-tag :type="getStatusTagType(scope.row.job_status)" size="small">
                 {{ getStatusText(scope.row.job_status) }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="200" fixed="right">
-            <template slot-scope="scope">
+          <el-table-column label="操作" width="120" fixed="right">
+            <template #default="scope">
               <el-button
                 type="text"
                 @click="goToTestCaseManagement(scope.row)"
@@ -72,7 +82,7 @@ export default {
   data () {
     return {
       searchForm: {
-        project_id: '',
+        job_type: '',
         doc_name: '',
         job_status: ''
       },
@@ -110,7 +120,7 @@ export default {
       this.fetchDocs()
     },
     resetSearch () {
-      this.searchForm.project_id = ''
+      this.searchForm.job_type = ''
       this.searchForm.doc_name = ''
       this.searchForm.job_status = ''
       this.fetchDocs()
@@ -125,7 +135,7 @@ export default {
     fetchDocs () {
       this.listLoading = true
       const params = {
-        project_id: this.searchForm.project_id || undefined,
+        job_type: this.searchForm.job_type || undefined,
         doc_name: this.searchForm.doc_name || undefined,
         job_status: this.searchForm.job_status !== '' ? this.searchForm.job_status : undefined
       }
@@ -150,6 +160,7 @@ export default {
             id: it.id,
             job_id: it.id,
             doc_id: it.doc_id,
+            job_type: it.doc_type || it.job_type || '',
             project_name: it.project_name || '',
             doc_name: it.doc_filename || it.doc_name || '',
             job_status: it.job_status,
@@ -207,12 +218,9 @@ export default {
       }
       // 构建查询参数
       const query = {}
-      if (jobId) {
-        query.job_id = jobId
-      }
-      if (docId) {
-        query.doc_id = docId
-      }
+      if (jobId) { query.job_id = jobId }
+      if (docId) { query.doc_id = docId }
+      if (row.job_type) { query.case_type = row.job_type }
       // 使用 router.resolve 生成完整路径，然后在新窗口打开
       const routeData = this.$router.resolve({
         path: '/testCaseManagement',

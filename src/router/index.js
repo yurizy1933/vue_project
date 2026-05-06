@@ -8,13 +8,16 @@ import HomePage from '../components/login/homePage.vue'
 import Axios from 'axios'
 // import { error } from 'shelljs'
 import router from '.'
-// import DocManagement from '../components/aitest/docManagement.vue'
-import projectPrdManagement from '../components/aitest/projectPrdManagement.vue'
+import docManagement from '../components/aitest/docManagement.vue'
+// import projectPrdManagement from '../components/aitest/projectPrdManagement.vue'
 import testCaseManagement from '../components/aitest/testCaseManagement.vue'
 import aiTestCase from '../components/aitest/aitestcase.vue'
-import apiDocManagement from '../components/aitest/apiDocManagement.vue'
+// import apiDocManagement from '../components/aitest/apiDocManagement.vue'
 import apiInterfaceManagement from '../components/aitest/apiInterfaceManagement.vue'
 import testDataManagement from '../components/aitest/testDataManagement.vue'
+import testCaseExecution from '../components/aitest/testCaseExecution.vue'
+import testCaseResult from '../components/aitest/testCaseResult.vue'
+import testCaseHistory from '../components/aitest/testCaseHistory.vue'
 import projectManagement from '../components/system/projectManagement.vue'
 
 Vue.use(Router)
@@ -50,16 +53,16 @@ export default new Router({
           name: 'Dashboard',
           component: HelloWorld // 或者你的仪表盘页面
         },
-        // {
-        //   path: 'docManagement',
-        //   name: 'docManagement',
-        //   component: DocManagement
-        // },
         {
-          path: 'projectPrdManagement',
-          name: 'projectPrdManagement',
-          component: projectPrdManagement
+          path: 'docManagement',
+          name: 'docManagement',
+          component: docManagement
         },
+        // {
+        //   path: 'projectPrdManagement',
+        //   name: 'projectPrdManagement',
+        //   component: projectPrdManagement
+        // },
         {
           path: 'testCaseManagement',
           name: 'testCaseManagement',
@@ -75,11 +78,11 @@ export default new Router({
           name: 'projectManagement',
           component: projectManagement
         },
-        {
-          path: 'apiDocManagement',
-          name: 'apiDocManagement',
-          component: apiDocManagement
-        },
+        // {
+        //   path: 'apiDocManagement',
+        //   name: 'apiDocManagement',
+        //   component: apiDocManagement
+        // },
         {
           path: 'apiInterfaceManagement',
           name: 'apiInterfaceManagement',
@@ -89,6 +92,21 @@ export default new Router({
           path: 'testDataManagement',
           name: 'testDataManagement',
           component: testDataManagement
+        },
+        {
+          path: 'testCaseExecution',
+          name: 'testCaseExecution',
+          component: testCaseExecution
+        },
+        {
+          path: 'testCaseResult',
+          name: 'testCaseResult',
+          component: testCaseResult
+        },
+        {
+          path: 'testCaseHistory',
+          name: 'testCaseHistory',
+          component: testCaseHistory
         }
       ]
     }
