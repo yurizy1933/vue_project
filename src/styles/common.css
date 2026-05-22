@@ -13,8 +13,13 @@ body {
   line-height: var(--line-height-base);
   color: var(--text-primary);
   background-color: var(--bg-color-light);
+  background-image: linear-gradient(180deg, #f7faff 0%, #eef3f8 100%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  --unified-table-height: clamp(88px, calc(100vh - 528px), 430px);
 }
 
 /* ===== Scrollbar styles ===== */
@@ -113,6 +118,7 @@ body {
   background: var(--bg-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-base);
+  border: 1px solid var(--border-color-light);
   overflow: hidden;
 }
 
@@ -120,29 +126,60 @@ body {
   width: 100%;
   border: none;
   border-radius: 0;
+  color: var(--text-primary);
 }
 
-.unified-table >>> .el-table__header {
+.unified-table .el-table__header {
   background: var(--table-header-bg);
 }
 
-.unified-table >>> .el-table__header th {
+.unified-table .el-table__header th {
   background: var(--table-header-bg);
-  color: var(--text-regular);
+  color: var(--text-secondary);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
   border-bottom: 1px solid var(--table-border-color);
-  padding: var(--spacing-lg) 0;
+  padding: 10px 0;
 }
 
-.unified-table >>> .el-table__body td {
+.unified-table .el-table__body td {
   font-size: var(--font-size-base);
   color: var(--text-primary);
-  padding: var(--spacing-lg) 0;
+  padding: 12px 0;
 }
 
-.unified-table >>> .el-table__body tr:hover {
+.unified-table .el-table__body tr:hover {
   background: var(--table-hover-bg);
+}
+
+.unified-table .cell {
+  line-height: 23px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.unified-table .el-table__header th:first-child .cell,
+.unified-table .el-table__body td:first-child .cell {
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  text-align: center;
+}
+
+.unified-table.el-table--border,
+.unified-table.el-table--group {
+  border: none;
+}
+
+.unified-table.el-table--border::after,
+.unified-table.el-table--group::after,
+.unified-table::before {
+  display: none;
+}
+
+.unified-table.el-table--border th,
+.unified-table.el-table--border td {
+  border-right: none;
 }
 
 /* ===== Form unified styles ===== */
@@ -194,10 +231,10 @@ body {
 
 /* ===== Search container ===== */
 .search-container {
-  padding: var(--spacing-xl) var(--spacing-xxl);
-  background: var(--bg-color-secondary);
-  border-radius: var(--radius-lg);
-  border: none;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #fbfdff 0%, #f5f8fc 100%);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color-light);
 }
 
 /* ===== Card styles ===== */
@@ -205,6 +242,7 @@ body {
   background: var(--bg-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-base);
+  border: 1px solid var(--border-color-light);
 }
 
 .card-body {
@@ -256,14 +294,21 @@ body {
 
 /* ===== Container unified styles ===== */
 .unified-container {
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-base);
+  border: 1px solid var(--border-color-light);
+  background: var(--bg-color);
+  overflow: visible;
 }
 
 .unified-container >>> .el-card {
   margin-bottom: 0;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  box-shadow: none;
 }
 
 .unified-container >>> .el-card__body {
@@ -272,33 +317,66 @@ body {
 
 /* ===== Search container unified styles ===== */
 .unified-search-container {
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-xl) var(--spacing-xxl);
-  background: var(--bg-color-light);
-  border-radius: var(--radius-lg);
-  border: none;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #fbfdff 0%, #f5f8fc 100%);
+  border-radius: var(--radius-md);
+  border: 1px solid #d9e2ec;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 /* ===== Table wrap unified styles ===== */
 .unified-table-wrap {
   display: flex;
   flex-direction: column;
-  margin-top: var(--spacing-lg);
+  margin-top: 12px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  padding: 12px;
+  min-height: 0;
+}
+
+.unified-container > .unified-table-wrap {
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 /* ===== Table unified styles (扩展现有) ===== */
-.unified-table >>> .el-table__body tr {
+.unified-table .el-table__body tr {
   transition: background-color var(--transition-base);
 }
 
-.unified-table >>> .el-table__body tr:hover {
+.unified-table .el-table__body tr:hover {
   background: var(--bg-color-secondary);
+}
+
+.unified-table-wrap > .unified-table {
+  flex: 0 0 var(--unified-table-height);
+  height: var(--unified-table-height);
+  min-height: var(--unified-table-height);
+}
+
+.unified-table-wrap > .unified-table .el-table__body-wrapper {
+  min-height: calc(var(--unified-table-height) - 44px);
+  max-height: calc(var(--unified-table-height) - 44px);
+  overflow-y: auto;
+}
+
+.unified-table-wrap > .unified-table .el-table__fixed-body-wrapper,
+.unified-table-wrap > .unified-table .el-table__fixed-right .el-table__fixed-body-wrapper {
+  min-height: calc(var(--unified-table-height) - 44px);
+  max-height: calc(var(--unified-table-height) - 44px);
+  overflow-y: hidden;
 }
 
 /* ===== Pagination unified styles (更新现有) ===== */
 .unified-pagination-wrap {
-  margin-top: var(--spacing-xl);
-  padding: var(--spacing-sm) 0;
+  flex: 0 0 auto;
+  margin-top: 12px;
+  padding: 8px 4px 2px;
   text-align: right;
 }
 
@@ -306,46 +384,107 @@ body {
 .unified-form-inline {
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
+  column-gap: 12px;
+  row-gap: 8px;
   flex-wrap: wrap;
 }
 
-.unified-form-inline >>> .el-form-item {
-  margin-bottom: 0;
-  margin-right: 0;
+.unified-form-inline .el-form-item {
+  margin-bottom: 0 !important;
+  margin-right: 0 !important;
   flex-shrink: 0;
 }
 
-.unified-form-inline >>> .el-form-item__label {
-  line-height: var(--button-height);
-  padding-right: var(--spacing-md);
+.unified-form-inline .el-form-item__label {
+  line-height: 34px;
+  padding-right: 8px;
   color: var(--form-label-color);
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
 }
 
-.unified-form-inline >>> .el-input__inner,
-.unified-form-inline >>> .el-select .el-input__inner,
-.unified-form-inline >>> .el-input-number__inner {
-  height: var(--button-height);
+.unified-form-inline .el-input__inner,
+.unified-form-inline .el-select .el-input__inner,
+.unified-form-inline .el-input-number__inner {
+  height: 34px;
+  line-height: 34px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
+  background: #fff;
   transition: all var(--transition-base);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
 }
 
-.unified-form-inline >>> .el-input__inner:focus,
-.unified-form-inline >>> .el-select .el-input__inner:focus,
-.unified-form-inline >>> .el-input-number__inner:focus {
+.unified-form-inline .el-input__inner:focus,
+.unified-form-inline .el-select .el-input__inner:focus,
+.unified-form-inline .el-input-number__inner:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
 }
 
-.unified-form-inline >>> .el-button {
-  height: var(--button-height);
-  padding: 0 var(--button-padding-h);
+.unified-form-inline .el-button {
+  height: 34px;
+  padding: 0 14px;
   border-radius: var(--radius-md);
   font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
+}
+
+.unified-search-container .el-input,
+.unified-search-container .el-select {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --unified-table-height: 360px;
+  }
+
+  .unified-search-container {
+    padding: 10px 12px;
+  }
+
+  .unified-container > .unified-table-wrap {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .unified-form-inline {
+    align-items: flex-start;
+    column-gap: 10px;
+    row-gap: 8px;
+  }
+
+  .unified-form-inline .el-form-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .unified-form-inline .el-form-item__label {
+    float: none;
+    flex: 0 0 72px;
+    width: 72px !important;
+    padding-right: 8px;
+    text-align: right;
+  }
+
+  .unified-form-inline .el-form-item__content {
+    flex: 1;
+    min-width: 0;
+    margin-left: 0 !important;
+    line-height: 34px;
+  }
+
+  .unified-form-inline .el-form-item:not(:has(.el-form-item__label)) {
+    padding-left: 0;
+  }
+
+  .unified-form-inline .el-input,
+  .unified-form-inline .el-select {
+    width: 100% !important;
+    max-width: 100%;
+  }
 }

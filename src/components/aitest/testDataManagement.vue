@@ -20,10 +20,10 @@
             </el-select>
           </el-form-item>
           <el-form-item label="描述">
-            <el-input v-model="searchForm.description" placeholder="请输入描述" clearable style="width: 300px"></el-input>
+            <el-input v-model="searchForm.description" placeholder="请输入描述" clearable style="width: 240px"></el-input>
           </el-form-item>
           <el-form-item label="接口名称">
-            <el-input v-model="searchForm.api_name" placeholder="请输入接口名称" clearable style="width: 260px"></el-input>
+            <el-input v-model="searchForm.api_name" placeholder="请输入接口名称" clearable style="width: 220px"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleSearch" :loading="listLoading">搜索</el-button>
@@ -36,7 +36,7 @@
     <!-- 测试数据列表 -->
     <div class="table-wrap unified-table-wrap">
       <el-table :data="paginatedData" stripe v-loading="listLoading" class="project-table unified-table" style="width: 100%">
-        <el-table-column prop="id" label="ID" width="60"></el-table-column>
+        <el-table-column type="index" width="60" label="#" />
         <el-table-column prop="is_public" label="数据类型" width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.is_public ? 'success' : 'primary'" size="small">

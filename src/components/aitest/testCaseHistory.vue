@@ -29,7 +29,7 @@
 
       <!-- 历史列表 -->
       <div class="table-wrap unified-table-wrap">
-        <el-table :data="list" border stripe size="small" v-loading="listLoading" class="project-table unified-table" style="width: 100%">
+        <el-table :data="list" stripe v-loading="listLoading" class="project-table unified-table" style="width: 100%">
           <el-table-column type="index" width="60" label="#" />
           <el-table-column prop="case_name" label="用例名称" min-width="200" show-overflow-tooltip></el-table-column>
           <el-table-column prop="created_at" label="执行时间" width="180"></el-table-column>

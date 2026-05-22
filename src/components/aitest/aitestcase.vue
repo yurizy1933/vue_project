@@ -1,5 +1,5 @@
 <template>
-  <div class="aitestcase-container">
+  <div class="aitestcase-container unified-container">
     <el-card>
       <div class="action-bar unified-action-bar">
         <h3 class="card-title unified-card-title">用例任务</h3>
@@ -20,7 +20,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="文档名称">
-            <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 420px"></el-input>
+            <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 280px"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleSearch" :loading="listLoading">搜索</el-button>
@@ -160,7 +160,7 @@ export default {
             id: it.id,
             job_id: it.id,
             doc_id: it.doc_id,
-            job_type: it.doc_type || it.job_type || '',
+            job_type: it.job_type || (it.doc_type === 'api' ? 'api' : 'doc'),
             project_name: it.project_name || '',
             doc_name: it.doc_filename || it.doc_name || '',
             job_status: it.job_status,
@@ -245,7 +245,7 @@ export default {
 
 <style scoped>
 .aitestcase-container {
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-base);

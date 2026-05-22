@@ -1,5 +1,7 @@
 /* Global style variables - unified font size, spacing, colors */
 
+:root {
+
 /* ===== Font sizes ===== */
 --font-size-xs: 12px;  /* Auxiliary text */
 --font-size-sm: 13px;  /* Secondary information */
@@ -38,10 +40,10 @@
 --radius-xl: 12px;
 
 /* ===== Shadows ===== */
---shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
---shadow-base: 0 2px 8px rgba(0, 0, 0, 0.1);
---shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
---shadow-xl: 0 6px 20px rgba(0, 0, 0, 0.15);
+--shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+--shadow-base: 0 8px 24px rgba(15, 23, 42, 0.06);
+--shadow-lg: 0 14px 34px rgba(15, 23, 42, 0.08);
+--shadow-xl: 0 20px 48px rgba(15, 23, 42, 0.12);
 
 /* ===== Transitions ===== */
 --transition-fast: 0.15s;
@@ -55,14 +57,14 @@
 --z-tooltip: 4000;
 
 /* ===== Table related ===== */
---table-header-bg: #f5f7fa;
---table-hover-bg: #f5f7fa;
---table-border-color: #ebeef5;
+--table-header-bg: #f7f9fc;
+--table-hover-bg: #f6faff;
+--table-border-color: #e5ebf3;
 
 /* ===== Form related ===== */
 --form-input-height: 36px;
---form-label-color: #606266;
---form-placeholder-color: #c0c4cc;
+--form-label-color: #52677d;
+--form-placeholder-color: #9aa9b9;
 
 /* ===== Button ===== */
 --button-height: 40px;
@@ -71,13 +73,13 @@
 --button-padding-v: 8px;
 
 /* ===== Primary colors ===== */
---primary-color: #409eff;
---primary-color-light: #66b1ff;
---primary-color-dark: #337ecc;
+--primary-color: #2563eb;
+--primary-color-light: #4f8df7;
+--primary-color-dark: #1d4ed8;
 
-/* Primary color gradient - softer and modern */
---gradient-primary-start: #8b9dc3;
---gradient-primary-end: #7fd085;
+/* Primary color gradient - restrained business accent */
+--gradient-primary-start: #1e3a8a;
+--gradient-primary-end: #0f766e;
 
 /* Success */
 --success-color: #52c41a;
@@ -100,20 +102,20 @@
 --info-color-dark: #7a7b85;
 
 /* ===== Neutral colors ===== */
---text-primary: #303133;
---text-regular: #606266;
---text-secondary: #606266;
---text-tertiary: #909399;
---text-placeholder: #c0c4cc;
+--text-primary: #172033;
+--text-regular: #344255;
+--text-secondary: #5b6b7f;
+--text-tertiary: #8391a4;
+--text-placeholder: #a8b4c3;
 
---border-color: #dcdfe6;
---border-color-light: #e4e7ed;
---border-color-dark: #dcdfe6;
+--border-color: #d7e0ea;
+--border-color-light: #e5ebf3;
+--border-color-dark: #b9c6d5;
 
 --bg-color: #ffffff;
---bg-color-light: #f8f9fb;
---bg-color-secondary: #f0f2f5;
---bg-color-tertiary: #f0f2f5;
+--bg-color-light: #f4f7fb;
+--bg-color-secondary: #eef3f8;
+--bg-color-tertiary: #e8eef6;
 
 /* ===== Element UI colors ===== */
 --el-color-primary: var(--primary-color);
@@ -121,3 +123,4 @@
 --el-color-warning: var(--warning-color);
 --el-color-danger: var(--danger-color);
 --el-color-info: var(--info-color);
+}

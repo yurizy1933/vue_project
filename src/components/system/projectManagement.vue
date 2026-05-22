@@ -9,11 +9,10 @@
         </el-button>
       </div>
 
-    <!-- 项目列表 -->
-      <div class="card-body">
-        <div class="table-wrap unified-table-wrap">
-          <el-table :data="projects" border stripe size="small" v-loading="listLoading" class="project-table unified-table" style="width: 100%">
-          <el-table-column prop="id" label="项目编号" width="100"></el-table-column>
+      <!-- 项目列表 -->
+      <div class="table-wrap unified-table-wrap">
+        <el-table :data="projects" stripe v-loading="listLoading" class="project-table unified-table" style="width: 100%">
+          <el-table-column type="index" width="60" label="#" />
           <el-table-column prop="project_name" label="项目名称" min-width="180"></el-table-column>
           <el-table-column prop="description" label="项目描述" min-width="250" show-overflow-tooltip></el-table-column>
           <el-table-column prop="owner" label="项目负责人" width="120"></el-table-column>
@@ -34,7 +33,6 @@
             :page-size="pageSize"
             :current-page.sync="currentPage"
           />
-        </div>
         </div>
       </div>
     </el-card>
@@ -168,23 +166,15 @@ export default {
 
 <style scoped>
 .project-container {
-  /* 保留特殊的全屏布局样式 */
-  margin: 0 !important;
-  padding: 0 !important;
-  height: 100%;
+  /* 使用 unified-container 的统一页面与表格布局 */
 }
 
 .project-container >>> .el-card {
-  margin: 0 !important;
-  height: 100%;
+  margin-bottom: 0;
 }
 
 .project-container >>> .el-card__body {
-  padding: 16px 20px !important;
-  padding-bottom: 0 !important;
-  height: calc(100% - 40px);
-  display: flex;
-  flex-direction: column;
+  padding: 16px 20px;
 }
 
 .card-header {
@@ -194,34 +184,7 @@ export default {
   flex-shrink: 0;
 }
 
-.card-body {
-  padding-top: 8px;
-  padding-bottom: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.project-container >>> .el-table {
-  flex: 1;
-  overflow: auto;
-}
-
-.project-container >>> .el-table__body-wrapper {
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: calc(100vh - 300px);
-}
-
 .mr-1 {
   margin-right: 6px;
-}
-
-/* Table container - 保留特殊布局 */
-.table-wrap {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
 }
 </style>

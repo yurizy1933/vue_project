@@ -15,12 +15,12 @@
             <el-form :inline="true" :model="searchForm" label-width="80px" class="unified-form-inline">
               <el-form-item label="项目">
                 <el-select v-model="searchForm.project_id" placeholder="请选择项目" clearable filterable
-                  :loading="searchProjectsLoading" :popper-append-to-body="true" style="width: 260px">
+                  :loading="searchProjectsLoading" :popper-append-to-body="true" style="width: 220px">
                   <el-option v-for="(p, idx) in searchProjectOptions" :key="idx" :label="p.label" :value="p.value" />
                 </el-select>
               </el-form-item>
               <el-form-item label="文档名称">
-                <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 420px" />
+                <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 280px" />
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="handleSearch" :loading="listLoading">查询</el-button>
@@ -55,12 +55,12 @@
             <el-form :inline="true" :model="searchForm" label-width="80px" class="unified-form-inline">
               <el-form-item label="项目">
                 <el-select v-model="searchForm.project_id" placeholder="请选择项目" clearable filterable
-                  :loading="searchProjectsLoading" :popper-append-to-body="true" style="width: 260px">
+                  :loading="searchProjectsLoading" :popper-append-to-body="true" style="width: 220px">
                   <el-option v-for="(p, idx) in searchProjectOptions" :key="idx" :label="p.label" :value="p.value" />
                 </el-select>
               </el-form-item>
               <el-form-item label="文档名称">
-                <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 420px" />
+                <el-input v-model="searchForm.doc_name" placeholder="请输入文档名称" clearable style="width: 280px" />
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="handleSearch" :loading="listLoading">查询</el-button>

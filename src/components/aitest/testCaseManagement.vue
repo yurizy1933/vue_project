@@ -15,21 +15,6 @@
           <el-form-item label="用例名称">
             <el-input v-model="searchForm.keyword" placeholder="请输入名称" clearable style="width: 200px" />
           </el-form-item>
-          <el-form-item label="来源类型">
-            <el-select v-model="searchForm.source_type" placeholder="全部" clearable
-              @change="onSourceTypeChange" style="width: 120px">
-              <el-option label="全部" value="" />
-              <el-option label="文档" value="doc" />
-              <el-option label="接口" value="api_interface" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="来源">
-            <el-select v-model="searchForm.source_id" placeholder="全部" clearable
-              :disabled="!searchForm.source_type" style="width: 220px">
-              <el-option label="全部" value="" />
-              <el-option v-for="s in sourceOptions" :key="s.value" :label="s.label" :value="s.value" />
-            </el-select>
-          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
@@ -46,7 +31,7 @@
 
       <!-- 用例列表 -->
       <div class="table-wrap unified-table-wrap">
-        <el-table :data="filteredCases" border stripe size="small" v-loading="listLoading"
+        <el-table :data="filteredCases" stripe v-loading="listLoading"
           class="project-table unified-table" style="width: 100%">
           <el-table-column type="index" width="60" label="#" />
           <el-table-column prop="name" label="用例名称" min-width="180" show-overflow-tooltip />
@@ -55,14 +40,6 @@
               <el-tag :type="scope.row.case_type === 'api' ? 'primary' : 'warning'" size="small">
                 {{ scope.row.case_type === 'api' ? '接口用例' : '文档用例' }}
               </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="source_name" label="来源" min-width="140">
-            <template #default="scope">
-              <el-button type="text" @click="goToSource(scope.row)" v-if="scope.row.source_name">
-                {{ scope.row.source_name }}
-              </el-button>
-              <span v-else>-</span>
             </template>
           </el-table-column>
           <el-table-column prop="steps" label="执行步骤" min-width="200" show-overflow-tooltip />
@@ -186,15 +163,12 @@ export default {
       searchForm: {
         keyword: '',
         case_type: '',
-        source_type: '',
-        source_id: '',
         job_id: '',
         doc_id: '',
         api_interface_id: '',
         status: ''
       },
       activeTab: '',
-      sourceOptions: [],
       cases: [],
       currentPage: 1,
       pageSize: 10,
@@ -261,37 +235,6 @@ export default {
         })
         .catch(() => { this.fetchCases() })
     },
-    onSourceTypeChange (val) {
-      this.searchForm.source_id = ''
-      this.sourceOptions = []
-      if (val === 'doc') {
-        this.$axios.get('/api/common/doc/get', { params: { doc_type: 'prd' } })
-          .then(res => {
-            const raw = res && res.data
-            const list = Array.isArray(raw) ? raw
-              : (raw && Array.isArray(raw.data)) ? raw.data
-                : (raw && Array.isArray(raw.list)) ? raw.list : []
-            this.sourceOptions = list.map(it => ({
-              value: it.id != null ? it.id : it.doc_id,
-              label: it.file_name || it.filename || it.doc_name || ''
-            })).filter(it => it.value != null)
-          })
-          .catch(() => {})
-      } else if (val === 'api_interface') {
-        this.$axios.get('/api/apicommon/api_interface/get')
-          .then(res => {
-            const raw = res && res.data
-            const list = Array.isArray(raw) ? raw
-              : (raw && Array.isArray(raw.data)) ? raw.data
-                : (raw && Array.isArray(raw.list)) ? raw.list : []
-            this.sourceOptions = list.map(it => ({
-              value: it.id,
-              label: (it.api_name || '') + ' ' + (it.api_path || '')
-            })).filter(it => it.value != null)
-          })
-          .catch(() => {})
-      }
-    },
     onTabClick (tab) {
       this.searchForm.case_type = tab.name
       this.currentPage = 1
@@ -304,9 +247,6 @@ export default {
     resetSearch () {
       this.searchForm.keyword = ''
       this.searchForm.case_type = this.activeTab
-      this.searchForm.source_type = ''
-      this.searchForm.source_id = ''
-      this.sourceOptions = []
       this.currentPage = 1
       this.fetchCases()
     },
@@ -336,13 +276,6 @@ export default {
         }
       })
     },
-    goToSource (row) {
-      if (row.source_type === 'doc' && row.doc_id) {
-        this.$router.push({ path: '/docManagement', query: { doc_id: row.doc_id } })
-      } else if (row.source_type === 'api_interface' && row.api_interface_id) {
-        this.$router.push({ path: '/apiInterfaceManagement' })
-      }
-    },
     viewCase (row) {
       this.viewVisible = true
       this.detailLoading = true
@@ -352,7 +285,7 @@ export default {
           const raw = res && res.data
           const data = raw && (raw.data || raw.detail || raw)
           const status = data.status != null ? String(data.status) : ''
-          const caseType = data.doc_type || data.case_type || ''
+          const caseType = data.case_type || (data.doc_type === 'api' ? 'api' : '')
           this.currentCase = {
             id: data.id != null ? data.id : (data.case_id != null ? data.case_id : data.caseid),
             case_type: caseType || 'doc',
@@ -370,7 +303,7 @@ export default {
     openEdit (row) {
       if (row) {
         const status = row.status != null ? String(row.status) : ''
-        const caseType = row.doc_type || row.case_type || ''
+        const caseType = row.case_type || (row.doc_type === 'api' ? 'api' : '')
         this.editForm = {
           id: row.id != null ? row.id : (row.case_id != null ? row.case_id : row.caseid) || null,
           case_type: caseType || 'doc',
@@ -465,13 +398,6 @@ export default {
         case_type: this.searchForm.case_type || undefined,
         keyword: this.searchForm.keyword || undefined
       }
-      if (this.searchForm.source_id) {
-        if (this.searchForm.source_type === 'doc') {
-          params.doc_id = this.searchForm.source_id
-        } else if (this.searchForm.source_type === 'api_interface') {
-          params.api_interface_id = this.searchForm.source_id
-        }
-      }
       Object.keys(params).forEach(key => {
         if (params[key] === undefined || params[key] === '') delete params[key]
       })
@@ -487,7 +413,7 @@ export default {
           this.totalCases = total
           this.cases = arr.map(it => {
             const status = it.status != null ? String(it.status) : ''
-            const caseType = it.doc_type || it.case_type || ''
+            const caseType = it.case_type || (it.doc_type === 'api' ? 'api' : '')
             return {
               id: it.id != null ? it.id : (it.case_id != null ? it.case_id : it.caseid),
               case_type: caseType || 'doc',
@@ -497,8 +423,6 @@ export default {
               expected: it.expected || it.expected_result || it.expect || '',
               level: it.level != null ? String(it.level) : (it.priority != null ? String(it.priority) : ''),
               status: status === 'active' ? 'enabled' : (status === 'inactive' ? 'disabled' : status),
-              source_name: it.source_name || it.doc_name || it.api_name || '',
-              source_type: it.source_type || (it.doc_id ? 'doc' : (it.api_interface_id ? 'api_interface' : '')),
               doc_id: it.doc_id || '',
               api_interface_id: it.api_interface_id || '',
               base_url: it.base_url || ''

@@ -13,16 +13,16 @@
       <div class="search-container unified-search-container">
         <el-form :inline="true" :model="searchForm" label-width="80px" class="search-form unified-form-inline">
           <el-form-item label="API名称">
-            <el-input v-model="searchForm.api_name" placeholder="请输入API名称" clearable style="width: 200px"></el-input>
+            <el-input v-model="searchForm.api_name" placeholder="请输入API名称" clearable style="width: 180px"></el-input>
           </el-form-item>
           <el-form-item label="API路径">
-            <el-input v-model="searchForm.api_path" placeholder="请输入API路径" clearable style="width: 260px"></el-input>
+            <el-input v-model="searchForm.api_path" placeholder="请输入API路径" clearable style="width: 240px"></el-input>
           </el-form-item>
           <el-form-item label="项目名称">
-            <el-input v-model="searchForm.project_name" placeholder="请输入项目名称" clearable style="width: 200px"></el-input>
+            <el-input v-model="searchForm.project_name" placeholder="请输入项目名称" clearable style="width: 180px"></el-input>
           </el-form-item>
           <el-form-item label="文档名称">
-            <el-input v-model="searchForm.api_doc_name" placeholder="请输入文档名称" clearable style="width: 260px"></el-input>
+            <el-input v-model="searchForm.api_doc_name" placeholder="请输入文档名称" clearable style="width: 240px"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleSearch" :loading="listLoading">搜索</el-button>
@@ -35,7 +35,7 @@
     <!-- 接口列表 -->
     <div class="table-wrap unified-table-wrap">
       <el-table :data="paginatedInterfaces" stripe v-loading="listLoading" class="project-table unified-table" style="width: 100%">
-        <el-table-column prop="id" label="ID" width="60"></el-table-column>
+        <el-table-column type="index" width="60" label="#" />
         <el-table-column prop="project_name" label="项目名称" min-width="120" show-overflow-tooltip></el-table-column>
         <el-table-column prop="api_doc_name" label="接口文档" min-width="150" show-overflow-tooltip></el-table-column>
         <el-table-column prop="api_name" label="API名称" min-width="180" show-overflow-tooltip></el-table-column>

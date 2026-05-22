@@ -150,7 +150,9 @@ export default {
     },
     setPageTitle (routeName) {
       const titles = {
+        'Home': '仪表盘',
         'HomePage': '仪表盘',
+        'Dashboard': '仪表盘',
         'CodeGeneration': '代码生成',
         'projectManagement': '项目管理',
         'UserManagement': '用户管理',
@@ -175,22 +177,32 @@ export default {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8eaf6 100%);
+  background: linear-gradient(180deg, #f7faff 0%, #eef3f8 100%);
   font-family: 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 }
 
 .header {
-  background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%);
-  border-bottom: 1px solid rgba(255,255,255,0.15);
+  background: #fff;
+  border-bottom: 1px solid var(--border-color-light);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--spacing-xl);
   height: 56px;
-  color: #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
   position: relative;
   z-index: 200;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color) 0%, #0f766e 100%);
 }
 
 .header-left {
@@ -208,15 +220,20 @@ export default {
 
 .logo {
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   color: #fff;
+  background: #172033;
+  border-radius: var(--radius-lg);
+  padding: 8px 14px;
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  box-shadow: 0 8px 18px rgba(23, 32, 51, 0.14);
 }
 
 .logo i {
   font-size: var(--font-size-xl);
+  color: #93c5fd;
 }
 
 .user-info {
@@ -232,7 +249,7 @@ export default {
   height: 36px;
   border-radius: 50%;
   margin-right: 8px;
-  border: 2px solid rgba(255,255,255,0.4);
+  border: 2px solid #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s;
 }
@@ -243,8 +260,8 @@ export default {
 
 .username {
   margin-right: 4px;
-  background: rgba(255,255,255,0.18);
-  color: #fff;
+  background: #f3f7fc;
+  color: var(--text-primary);
   border-radius: 6px;
   padding: 6px 12px;
   font-size: 14px;
@@ -262,22 +279,22 @@ export default {
 }
 
 .el-dropdown-link:hover {
-  background: rgba(255,255,255,0.15);
+  background: var(--bg-color-light);
 }
 
 .main-content {
   flex: 1;
   display: flex;
   overflow: hidden;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-xl) var(--spacing-lg);
+  gap: 18px;
+  padding: 18px;
 }
 
 .sidebar {
-  background: #fff;
-  border-right: 2px solid #e4e7ed;
-  border-radius: 8px 0 0 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  background: #f8fbff;
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-base);
   padding: var(--spacing-md) 0;
   min-width: 200px;
   max-width: 220px;
@@ -298,11 +315,11 @@ export default {
   margin: 6px var(--spacing-sm) !important;
   transition: all 0.2s !important;
   font-weight: 600 !important;
-  color: #2c3e50 !important;
-  font-size: 16px;
-  text-align: right;
-  justify-content: flex-end;
-  padding-right: 16px !important;
+  color: var(--text-regular) !important;
+  font-size: 15px;
+  text-align: left;
+  justify-content: flex-start;
+  padding-right: 14px !important;
   padding-left: 14px !important;
   display: flex;
   flex-direction: row;
@@ -315,58 +332,76 @@ export default {
 .el-menu-vertical-demo > .el-menu-item span,
 .el-menu-vertical-demo > .el-submenu > .el-submenu__title span {
   margin-left: 10px;
-  letter-spacing: 0.3px;
+  letter-spacing: 0;
+  color: var(--text-regular) !important;
 }
 
 /* Icon position adjustment */
 .el-menu-vertical-demo > .el-menu-item i,
 .el-menu-vertical-demo > .el-submenu > .el-submenu__title i {
-  margin-right: auto;
+  margin-right: 0;
   margin-left: 0;
   font-size: 16px !important;
   width: 22px;
   text-align: center;
   opacity: 0.85;
+  color: #64748b !important;
   transition: all 0.2s;
 }
 
 .el-menu-vertical-demo > .el-menu-item:hover,
 .el-menu-vertical-demo > .el-submenu > .el-submenu__title:hover {
-  background: #f0f2f5 !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  border-color: #cfd8dc !important;
-  transform: translateX(-3px);
+  background: #eef5ff !important;
+  box-shadow: none;
+  border-color: #d7e7ff !important;
+  transform: none;
 }
 
 .el-menu-vertical-demo > .el-menu-item:hover i,
 .el-menu-vertical-demo > .el-submenu > .el-submenu__title:hover i {
   opacity: 1;
-  transform: scale(1.1);
-  color: var(--gradient-primary-start);
+  transform: none;
+  color: var(--primary-color) !important;
 }
 
 .el-menu-vertical-demo > .el-menu-item.is-active {
-  background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%) !important;
-  color: #fff !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  border-color: #0a58ca !important;
-  transform: translateX(-5px);
+  position: relative;
+  background: #eaf3ff !important;
+  color: var(--primary-color) !important;
+  box-shadow: none !important;
+  border-color: #cfe3ff !important;
+  transform: none;
   font-weight: 700 !important;
 }
 
+.el-menu-vertical-demo > .el-menu-item.is-active::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 9px;
+  bottom: 9px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--primary-color);
+}
+
+.el-menu-vertical-demo > .el-menu-item.is-active span {
+  color: var(--primary-color) !important;
+}
+
 .el-menu-vertical-demo > .el-menu-item.is-active i {
-  color: #fff !important;
-  transform: scale(1.15);
+  color: var(--primary-color) !important;
+  transform: none;
   opacity: 1;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: none;
 }
 
 /* Second level menu wrapper */
 .el-menu-vertical-demo .el-submenu .el-menu {
-  background: #f8f9fa !important;
+  background: #f2f6fb !important;
   border-radius: 8px;
   margin: 4px 0;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 1px 4px rgba(15, 23, 42, 0.03);
   padding: 8px 0;
   border: 1px solid #e9ecef;
   position: relative;
@@ -380,7 +415,7 @@ export default {
   top: 0;
   bottom: 0;
   width: 3px;
-  background: linear-gradient(to bottom, #9bb1de, #9fe27f);
+  background: #d3e3f6;
   border-radius: 0 2px 2px 0;
 }
 
@@ -388,11 +423,11 @@ export default {
 .el-menu-vertical-demo .el-submenu .el-menu-item {
   position: relative;
   margin-left: 0 !important;
-  padding-left: 40px !important;
+  padding-left: 36px !important;
   font-weight: 400;
   font-size: 13px;
-  text-align: right;
-  justify-content: flex-end;
+  text-align: left;
+  justify-content: flex-start;
   padding-right: 14px !important;
   display: flex;
   flex-direction: row;
@@ -402,11 +437,16 @@ export default {
   border: 1px solid transparent;
   min-height: 38px;
   line-height: 38px;
+  color: var(--text-secondary) !important;
+}
+
+.el-menu-vertical-demo .el-submenu .el-menu-item span {
+  color: var(--text-secondary) !important;
 }
 
 /* Second level menu icon position adjustment */
 .el-menu-vertical-demo .el-submenu .el-menu-item i {
-  margin-right: auto;
+  margin-right: 0;
   margin-left: 0;
   font-size: 13px !important;
   width: 18px;
@@ -417,78 +457,82 @@ export default {
 
 /* Second level menu hover effect */
 .el-menu-vertical-demo .el-submenu .el-menu-item:hover {
-  background: rgba(13, 110, 253, 0.08) !important;
-  border-color: rgba(13, 110, 253, 0.15) !important;
-  transform: translateX(-2px);
+  background: #eaf3ff !important;
+  border-color: #d7e7ff !important;
+  transform: none;
 }
 
 .el-menu-vertical-demo .el-submenu .el-menu-item:hover i {
-  color: var(--gradient-primary-start);
-  transform: scale(1.1);
+  color: var(--primary-color);
+  transform: none;
 }
 
 /* Second level menu active state */
 .el-menu-vertical-demo .el-submenu .el-menu-item.is-active {
-  background: rgba(64, 158, 255, 0.1) !important;
+  background: #eaf3ff !important;
   color: var(--primary-color) !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.15) !important;
-  transform: translateX(-3px);
-  border-color: rgba(64, 158, 255, 0.25) !important;
+  box-shadow: none !important;
+  transform: none;
+  border-color: #cfe3ff !important;
+}
+
+.el-menu-vertical-demo .el-submenu .el-menu-item.is-active span {
+  color: var(--primary-color) !important;
 }
 
 .el-menu-vertical-demo .el-submenu .el-menu-item.is-active i {
-  color: #9bb1de !important;
-  transform: scale(1.15);
+  color: var(--primary-color) !important;
+  transform: none;
 }
 
 .el-menu-vertical-demo .el-submenu .el-menu-item.is-active::after {
   content: '';
   position: absolute;
-  right: 6px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #9bb1de;
-  box-shadow: 0 0 10px rgba(13, 110, 253, 0.7);
+  background: var(--primary-color);
+  box-shadow: none;
 }
 
 .el-menu-vertical-demo .el-submenu .el-menu-item::before {
   content: '';
   position: absolute;
-  left: 12px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: #9bb1de;
+  background: #b7c7d9;
   opacity: 0.3;
 }
 
 .el-menu-vertical-demo .el-submenu .el-menu-item.is-active::before,
 .el-menu-vertical-demo .el-submenu .el-menu-item:hover::before {
-  background: #9bb1de;
+  background: var(--primary-color);
   opacity: 1;
 }
 
 /* Second level menu background when first level menu is active */
 .el-menu-vertical-demo > .el-submenu.is-opened > .el-menu {
-  background: #f8f9fa !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background: #f2f6fb !important;
+  box-shadow: none !important;
 }
 
 /* Expanded menu title styles */
 .el-menu-vertical-demo > .el-submenu.is-opened > .el-submenu__title {
-  background: rgba(13, 110, 253, 0.1) !important;
-  border-color: #c5cbe6 !important;
+  background: #eef5ff !important;
+  border-color: #d7e7ff !important;
 }
 
 .el-menu-vertical-demo > .el-submenu.is-opened > .el-submenu__title i {
-  color: var(--gradient-primary-start);
-  transform: scale(1.1);
+  color: var(--primary-color) !important;
+  transform: none;
   opacity: 1;
 }
 
@@ -502,7 +546,7 @@ export default {
 
 .el-menu-vertical-demo .el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
   transform: rotate(-90deg) !important;
-  color: var(--gradient-primary-start);
+  color: var(--primary-color);
 }
 
 /* Menu item separator effect */
@@ -528,11 +572,11 @@ export default {
   display: flex;
   align-items: center;
   padding: 16px var(--spacing-xl);
-  background: linear-gradient(to bottom, #fafbfc 0%, #fff 100%);
-  border-bottom: 1px solid #e8e9eb;
+  background: #fbfdff;
+  border-bottom: 1px solid var(--border-color-light);
   border-radius: 8px 8px 0 0;
   min-height: 48px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: none;
   position: relative;
 }
 
@@ -543,13 +587,9 @@ export default {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(to right, #9bb1de, #9fe27f);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.content-header:hover::before {
+  background: linear-gradient(to right, var(--primary-color), #0f766e);
   opacity: 1;
+  transition: opacity 0.3s;
 }
 
 /* Divider between breadcrumb and title */
@@ -582,18 +622,18 @@ export default {
 }
 
 .content-body {
-  background: #fff;
+  background: #fbfdff;
   border-radius: 8px;
   padding: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  flex: 1;
+  box-shadow: var(--shadow-base);
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   transition: box-shadow 0.2s;
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--border-color-light);
   position: relative;
-  overflow-y: auto;
-  padding-bottom: 48px;
+  overflow: visible;
+  padding-bottom: 0;
 }
 
 /* Content area top separator */
@@ -702,6 +742,9 @@ export default {
     flex-direction: column;
     padding: var(--spacing-md);
     gap: var(--spacing-md);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 64px;
   }
 
   .sidebar {
@@ -713,11 +756,24 @@ export default {
   }
 
   .content {
-    padding: var(--spacing-lg) var(--spacing-md);
+    flex: 0 0 auto;
+    overflow: visible;
+    padding: 0;
   }
 
   .content-header {
     padding: var(--spacing-md);
+  }
+
+  .content-body {
+    flex: 0 0 auto;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .content-body > .unified-container {
+    flex: 0 0 auto;
+    overflow: visible;
   }
 
   .search-container {
