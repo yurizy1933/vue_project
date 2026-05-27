@@ -1,7 +1,7 @@
 <template>
   <div class="project-container unified-container">
     <!-- 顶部卡片 -->
-    <el-card class="mb-6">
+    <el-card class="mb-6 unified-main-card">
       <div class="card-header unified-action-bar">
         <h3 class="card-title unified-card-title">项目管理</h3>
         <el-button type="primary" @click="openCreate()" :disabled="submitLoading">
@@ -170,11 +170,24 @@ export default {
 }
 
 .project-container >>> .el-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 0;
 }
 
 .project-container >>> .el-card__body {
-  padding: 16px 20px;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px 20px;
+}
+
+.project-container >>> .unified-table-wrap {
+  flex: 1 1 auto;
+  margin-bottom: 0;
 }
 
 .card-header {

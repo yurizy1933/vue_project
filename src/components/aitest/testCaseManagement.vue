@@ -1,6 +1,6 @@
 <template>
   <div class="testcase-container unified-container">
-    <el-card>
+    <el-card class="unified-main-card">
       <div class="action-bar unified-action-bar">
         <h3 class="card-title unified-card-title">测试用例</h3>
         <div style="flex:1"></div>
@@ -8,6 +8,13 @@
           <i class="fa fa-plus mr-1"></i>新建用例
         </el-button>
       </div>
+
+      <!-- Tab 切换 -->
+      <el-tabs v-model="activeTab" @tab-click="onTabClick">
+        <el-tab-pane label="全部" name="" />
+        <el-tab-pane label="接口用例" name="api" />
+        <el-tab-pane label="文档用例" name="doc" />
+      </el-tabs>
 
       <!-- 搜索栏 -->
       <div class="search-container unified-search-container">
@@ -21,13 +28,6 @@
           </el-form-item>
         </el-form>
       </div>
-
-      <!-- Tab 切换 -->
-      <el-tabs v-model="activeTab" @tab-click="onTabClick">
-        <el-tab-pane label="全部" name="" />
-        <el-tab-pane label="接口用例" name="api" />
-        <el-tab-pane label="文档用例" name="doc" />
-      </el-tabs>
 
       <!-- 用例列表 -->
       <div class="table-wrap unified-table-wrap">

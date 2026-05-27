@@ -220,20 +220,32 @@ export default {
 
 .logo {
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: #fff;
-  background: #172033;
-  border-radius: var(--radius-lg);
-  padding: 8px 14px;
+  font-weight: 700;
+  color: #172033;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f8fe 100%);
+  border: 1px solid #dbe7f5;
+  border-radius: 10px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  box-shadow: 0 8px 18px rgba(23, 32, 51, 0.14);
+  gap: 9px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  letter-spacing: 0;
+  position: relative;
+}
+
+.logo::before {
+  content: '';
+  width: 4px;
+  height: 22px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--primary-color) 0%, #0f766e 100%);
+  flex: 0 0 auto;
 }
 
 .logo i {
-  font-size: var(--font-size-xl);
-  color: #93c5fd;
+  font-size: 17px;
+  color: var(--primary-color);
 }
 
 .user-info {
@@ -285,6 +297,7 @@ export default {
 .main-content {
   flex: 1;
   display: flex;
+  min-height: 0;
   overflow: hidden;
   gap: 18px;
   padding: 18px;
@@ -400,7 +413,7 @@ export default {
 .el-menu-vertical-demo .el-submenu .el-menu {
   background: #f2f6fb !important;
   border-radius: 8px;
-  margin: 4px 0;
+  margin: 4px 10px 8px;
   box-shadow: inset 0 1px 4px rgba(15, 23, 42, 0.03);
   padding: 8px 0;
   border: 1px solid #e9ecef;
@@ -411,32 +424,36 @@ export default {
 .el-menu-vertical-demo .el-submenu .el-menu::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
+  left: 12px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
   background: #d3e3f6;
-  border-radius: 0 2px 2px 0;
+  border-radius: 1px;
 }
 
 /* Second level menu items */
 .el-menu-vertical-demo .el-submenu .el-menu-item {
   position: relative;
   margin-left: 0 !important;
-  padding-left: 36px !important;
-  font-weight: 400;
+  padding-left: 18px !important;
+  padding-right: 18px !important;
+  font-weight: 500;
   font-size: 13px;
-  text-align: left;
-  justify-content: flex-start;
-  padding-right: 14px !important;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
   display: flex;
   flex-direction: row;
+  gap: 8px;
   border-radius: 6px;
   transition: all 0.15s !important;
-  margin: 3px 10px !important;
+  margin: 4px 12px 4px 24px !important;
   border: 1px solid transparent;
   min-height: 38px;
   line-height: 38px;
+  min-width: 0;
+  width: auto;
   color: var(--text-secondary) !important;
 }
 
@@ -450,6 +467,7 @@ export default {
   margin-left: 0;
   font-size: 13px !important;
   width: 18px;
+  flex: 0 0 18px;
   text-align: center;
   color: #8a8a8a;
   transition: all 0.2s;
@@ -484,38 +502,6 @@ export default {
 .el-menu-vertical-demo .el-submenu .el-menu-item.is-active i {
   color: var(--primary-color) !important;
   transform: none;
-}
-
-.el-menu-vertical-demo .el-submenu .el-menu-item.is-active::after {
-  content: '';
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  box-shadow: none;
-}
-
-.el-menu-vertical-demo .el-submenu .el-menu-item::before {
-  content: '';
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #b7c7d9;
-  opacity: 0.3;
-}
-
-.el-menu-vertical-demo .el-submenu .el-menu-item.is-active::before,
-.el-menu-vertical-demo .el-submenu .el-menu-item:hover::before {
-  background: var(--primary-color);
-  opacity: 1;
 }
 
 /* Second level menu background when first level menu is active */
@@ -560,6 +546,7 @@ export default {
 
 .content {
   flex: 1;
+  min-height: 0;
   padding: 0;
   background: transparent;
   overflow-y: auto;
@@ -571,7 +558,7 @@ export default {
   margin-bottom: 0;
   display: flex;
   align-items: center;
-  padding: 16px var(--spacing-xl);
+  padding: 16px 20px;
   background: #fbfdff;
   border-bottom: 1px solid var(--border-color-light);
   border-radius: 8px 8px 0 0;
@@ -626,7 +613,8 @@ export default {
   border-radius: 8px;
   padding: 0;
   box-shadow: var(--shadow-base);
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   transition: box-shadow 0.2s;
@@ -634,6 +622,13 @@ export default {
   position: relative;
   overflow: visible;
   padding-bottom: 0;
+}
+
+.content-body > .unified-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Content area top separator */
@@ -676,6 +671,10 @@ export default {
   transition: all 0.2s;
   display: flex;
   align-items: center;
+}
+
+.el-breadcrumb__item:first-child .el-breadcrumb__inner {
+  padding-left: 0;
 }
 
 /* Breadcrumb clickable item hover effect */
@@ -724,9 +723,7 @@ export default {
   align-items: center;
   justify-content: center;
   width: 100%;
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  flex: 0 0 40px;
   z-index: 10;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
   font-weight: 500;

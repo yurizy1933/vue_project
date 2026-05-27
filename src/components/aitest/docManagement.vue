@@ -1,6 +1,6 @@
 <template>
   <div class="doc-container unified-container">
-    <el-card>
+    <el-card class="unified-main-card">
       <div class="action-bar unified-action-bar">
         <h3 class="card-title unified-card-title">文档管理</h3>
         <div style="flex:1"></div>
@@ -8,7 +8,7 @@
       </div>
 
       <!-- Tab 切换 -->
-      <el-tabs v-model="activeTab" @tab-click="onTabClick">
+      <el-tabs v-model="activeTab" class="unified-fill-tabs" @tab-click="onTabClick">
         <el-tab-pane label="需求文档" name="prd">
           <!-- 搜索栏 -->
           <div class="search-container unified-search-container">
@@ -46,6 +46,19 @@
                 </template>
               </el-table-column>
             </el-table>
+
+            <div class="pagination-wrap unified-pagination-wrap">
+              <el-pagination
+                background
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="totalDocs"
+                :page-size="pageSize"
+                :current-page.sync="currentPage"
+                :page-sizes="[10, 20, 50, 100]"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+              />
+            </div>
           </div>
         </el-tab-pane>
 
@@ -87,23 +100,22 @@
                 </template>
               </el-table-column>
             </el-table>
+
+            <div class="pagination-wrap unified-pagination-wrap">
+              <el-pagination
+                background
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="totalDocs"
+                :page-size="pageSize"
+                :current-page.sync="currentPage"
+                :page-sizes="[10, 20, 50, 100]"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+              />
+            </div>
           </div>
         </el-tab-pane>
       </el-tabs>
-
-      <!-- 分页 -->
-      <div class="pagination-wrap unified-pagination-wrap">
-        <el-pagination
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="totalDocs"
-          :page-size="pageSize"
-          :current-page.sync="currentPage"
-          :page-sizes="[10, 20, 50, 100]"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
     </el-card>
 
     <!-- 上传弹窗 -->
